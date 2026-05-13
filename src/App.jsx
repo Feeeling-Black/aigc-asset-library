@@ -552,6 +552,36 @@ function GlobalPreviewGridView({ assets, onToggleFavorite, hoveredAssetId, selec
   const motionAssets = assets.filter((item) => item.mediaType === "gif" || item.mediaType === "video");
   const promptAssets = assets.filter((item) => item.hasPrompt);
   const showcaseAssets = [...stillAssets, ...motionAssets, ...promptAssets].slice(0, 12);
+  const overviewHeroAssets = [
+    {
+      id: "overview-hero-01",
+      title: "全局预览主展示图 01",
+      mediaType: "image",
+      mediaUrl: "/aigc-assets/overview/overview-hero-01.webp",
+      model: "Overview",
+      category: "全局预览",
+      scene: "主展示图",
+      hasPrompt: false,
+      prompt: "",
+      tags: ["主展示", "全局预览"],
+      gradient: "linear-gradient(135deg, #eaf3ff 0%, #d7ebff 48%, #b9dcff 100%)",
+      accent: "#0078d4",
+    },
+    {
+      id: "overview-hero-02",
+      title: "全局预览主展示图 02",
+      mediaType: "image",
+      mediaUrl: "/aigc-assets/overview/overview-hero-02.webp",
+      model: "Overview",
+      category: "全局预览",
+      scene: "主展示图",
+      hasPrompt: false,
+      prompt: "",
+      tags: ["主展示", "全局预览"],
+      gradient: "linear-gradient(135deg, #f3f2f1 0%, #e1dfdd 48%, #c8c6c4 100%)",
+      accent: "#2b88d8",
+    },
+  ];
 
   function renderAssetCard(item, index, frameClassName = "aspect-square") {
     return (
@@ -583,8 +613,8 @@ function GlobalPreviewGridView({ assets, onToggleFavorite, hoveredAssetId, selec
         </div>
         <div className="space-y-8">
           <div className="grid gap-5 lg:grid-cols-2">
-            {showcaseAssets[0] ? renderAssetCard(showcaseAssets[0], 0, "aspect-[4/3]") : null}
-            {showcaseAssets[1] ? renderAssetCard(showcaseAssets[1], 1, "aspect-[4/3]") : null}
+            {renderAssetCard(overviewHeroAssets[0], 0, "aspect-[3/2]")}
+            {renderAssetCard(overviewHeroAssets[1], 1, "aspect-[3/2]")}
           </div>
           <div>
             <div className="mb-4 flex items-end justify-between gap-4">
