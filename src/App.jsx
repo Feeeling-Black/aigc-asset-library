@@ -27,15 +27,15 @@ const visualPresets = [
   ["#fdf3f4", "#f7d7dc", "#f3a8b7", "#e3008c"],
 ];
 
-const initialAssets = Array.from({ length: 18 }, (_, index) => {
+const placeholderAssets = Array.from({ length: 12 }, (_, index) => {
   const id = index + 1;
-  const mediaType = mediaTypes[index % mediaTypes.length];
+  const mediaType = "image";
   const hasPrompt = index % 4 !== 1;
   const preset = visualPresets[index % visualPresets.length];
 
   return {
     id,
-    title: `${mediaType === "image" ? "图片" : mediaType === "gif" ? "动态素材" : "视频片段"}占位 ${String(id).padStart(2, "0")}`,
+    title: `图片占位 ${String(id).padStart(2, "0")}`,
     mediaType,
     model: models[index % models.length],
     category: categories[index % categories.length],
@@ -49,6 +49,48 @@ const initialAssets = Array.from({ length: 18 }, (_, index) => {
     accent: preset[3],
   };
 });
+
+const motionAssetTitles = [
+  "防晒科技",
+  "抑菌科技",
+  "舒弹科技",
+  "透气面料",
+  "防泼水科技",
+  "防护科技",
+  "易打理面料",
+  "耐磨面料",
+  "防雨科技",
+  "抗静电科技",
+  "纯棉面料",
+  "抑菌科技",
+  "防风科技",
+  "透湿科技",
+];
+
+const motionAssets = motionAssetTitles.map((title, index) => {
+  const id = index + 13;
+  const preset = visualPresets[index % visualPresets.length];
+  const scene = title.includes("面料") ? "功能面料" : title;
+
+  return {
+    id,
+    title,
+    mediaType: "video",
+    mediaUrl: `/aigc-assets/motion/gif${index + 1}.mp4`,
+    model: "动态素材",
+    category: "功能类",
+    scene,
+    quarter: "26Q2",
+    favorite: false,
+    hasPrompt: false,
+    prompt: "",
+    tags: ["动态素材", "功能类", title],
+    gradient: `linear-gradient(135deg, ${preset[0]} 0%, ${preset[1]} 48%, ${preset[2]} 100%)`,
+    accent: preset[3],
+  };
+});
+
+const initialAssets = [...placeholderAssets, ...motionAssets];
 
 const navItems = [
   { key: "all", label: "全部素材", icon: "image" },
@@ -228,6 +270,31 @@ function Panel({ children, className = "", style = {} }) {
 
 function AssetPreview({ item }) {
   const isMotion = item.mediaType === "gif" || item.mediaType === "video";
+
+  if (item.mediaUrl) {
+    if (item.mediaType === "video") {
+      return (
+        <div className="relative h-full w-full overflow-hidden bg-black">
+          <video
+            className="h-full w-full object-cover"
+            src={item.mediaUrl}
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="metadata"
+          />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/0 via-black/0 to-black/10" />
+        </div>
+      );
+    }
+
+    return (
+      <div className="relative h-full w-full overflow-hidden bg-gray-100">
+        <img src={item.mediaUrl} alt={item.title} className="h-full w-full object-cover" loading="lazy" />
+      </div>
+    );
+  }
 
   return (
     <div className="relative h-full w-full overflow-hidden" style={{ background: item.gradient }}>
@@ -418,10 +485,36 @@ function AssetGridView({ assets, onToggleFavorite, hoveredAssetId, selectedAsset
   );
 }
 
+function MotionGridView({ assets, onToggleFavorite, hoveredAssetId, selectedAssetId, onSelectAsset, onHoverStart, onHoverEnd }) {
+  const motionAssets = assets.slice(0, 14);
+
+  return (
+    <section className="grid gap-6 sm:grid-cols-2">
+      {motionAssets.map((item, index) => (
+        <AssetCard
+          key={item.id}
+          item={item}
+          index={index}
+          onToggleFavorite={onToggleFavorite}
+          isFocused={hoveredAssetId === item.id}
+          hasFocusedAsset={hoveredAssetId !== null}
+          isSelected={selectedAssetId === item.id}
+          onSelectAsset={onSelectAsset}
+          onHoverStart={onHoverStart}
+          onHoverEnd={onHoverEnd}
+          frameClassName="aspect-[4/3]"
+          showModelLabel={false}
+          showPromptPanel={false}
+        />
+      ))}
+    </section>
+  );
+}
+
 function AssetMarquee({ assets }) {
   const stillAssets = assets.filter((item) => item.mediaType === "image");
-  const sourceAssets = stillAssets.length > 0 ? stillAssets : assets;
-  const marqueeAssets = [...sourceAssets, ...sourceAssets, ...sourceAssets];
+  const sourceAssets = (stillAssets.length > 0 ? stillAssets : assets).slice(0, 6);
+  const marqueeAssets = [...sourceAssets, ...sourceAssets, ...sourceAssets, ...sourceAssets];
 
   return (
     <div className="relative overflow-hidden rounded-2xl border bg-white py-6" style={{ borderColor: theme.border, boxShadow: "0 10px 34px rgba(0,0,0,.055)" }}>
@@ -429,7 +522,7 @@ function AssetMarquee({ assets }) {
       <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-28 bg-gradient-to-l from-white to-transparent" />
       <div className="mb-8 px-6 text-center md:px-8">
         <h3 className="text-2xl font-semibold tracking-[-0.035em] md:text-4xl" style={{ color: theme.text }}>竖构图素材循环</h3>
-        <p className="mx-auto mt-4 max-w-2xl text-base leading-7 md:text-lg md:leading-8" style={{ color: theme.subText }}>以连续滚动的方式快速浏览静态图片素材，先建立整体视觉印象，再进入下方分类内容查看细节。</p>
+        <p className="mx-auto mt-4 max-w-2xl text-base leading-7 md:text-lg md:leading-8" style={{ color: theme.subText }}>精选六张竖构图静态图片循环展示，先建立整体视觉印象，再进入下方分类内容查看细节。</p>
       </div>
       <div className="marquee-track flex w-max gap-5 px-6 md:px-8">
         {marqueeAssets.map((item, index) => (
@@ -648,7 +741,7 @@ export default function AIGCAssetLibrary() {
 
         <SectionTitle activeSection={activeSection} filteredCount={filteredAssets.length} />
 
-        {activeSection === "prompt" ? <PromptLibraryView assets={filteredAssets} viewMode={viewMode} onToggleFavorite={handleToggleFavorite} hoveredAssetId={hoveredAssetId} selectedAssetId={selectedAssetId} onSelectAsset={handleSelectAsset} onHoverStart={setHoveredAssetId} onHoverEnd={() => setHoveredAssetId(null)} /> : activeSection === "taxonomy" ? <TaxonomyView /> : filteredAssets.length === 0 ? <EmptyState /> : showGrid ? activeSection === "all" ? <GlobalPreviewGridView assets={filteredAssets} onToggleFavorite={handleToggleFavorite} hoveredAssetId={hoveredAssetId} selectedAssetId={selectedAssetId} onSelectAsset={handleSelectAsset} onHoverStart={setHoveredAssetId} onHoverEnd={() => setHoveredAssetId(null)} /> : <AssetGridView assets={filteredAssets} onToggleFavorite={handleToggleFavorite} hoveredAssetId={hoveredAssetId} selectedAssetId={selectedAssetId} onSelectAsset={handleSelectAsset} onHoverStart={setHoveredAssetId} onHoverEnd={() => setHoveredAssetId(null)} /> : <AssetListView assets={filteredAssets} onToggleFavorite={handleToggleFavorite} />}
+        {activeSection === "prompt" ? <PromptLibraryView assets={filteredAssets} viewMode={viewMode} onToggleFavorite={handleToggleFavorite} hoveredAssetId={hoveredAssetId} selectedAssetId={selectedAssetId} onSelectAsset={handleSelectAsset} onHoverStart={setHoveredAssetId} onHoverEnd={() => setHoveredAssetId(null)} /> : activeSection === "taxonomy" ? <TaxonomyView /> : filteredAssets.length === 0 ? <EmptyState /> : showGrid ? activeSection === "all" ? <GlobalPreviewGridView assets={filteredAssets} onToggleFavorite={handleToggleFavorite} hoveredAssetId={hoveredAssetId} selectedAssetId={selectedAssetId} onSelectAsset={handleSelectAsset} onHoverStart={setHoveredAssetId} onHoverEnd={() => setHoveredAssetId(null)} /> : activeSection === "motion" ? <MotionGridView assets={filteredAssets} onToggleFavorite={handleToggleFavorite} hoveredAssetId={hoveredAssetId} selectedAssetId={selectedAssetId} onSelectAsset={handleSelectAsset} onHoverStart={setHoveredAssetId} onHoverEnd={() => setHoveredAssetId(null)} /> : <AssetGridView assets={filteredAssets} onToggleFavorite={handleToggleFavorite} hoveredAssetId={hoveredAssetId} selectedAssetId={selectedAssetId} onSelectAsset={handleSelectAsset} onHoverStart={setHoveredAssetId} onHoverEnd={() => setHoveredAssetId(null)} /> : <AssetListView assets={filteredAssets} onToggleFavorite={handleToggleFavorite} />}
       </main>
 
       <style>{`
