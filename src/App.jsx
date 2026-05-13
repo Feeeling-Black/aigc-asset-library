@@ -512,8 +512,20 @@ function MotionGridView({ assets, onToggleFavorite, hoveredAssetId, selectedAsse
 }
 
 function AssetMarquee({ assets }) {
-  const stillAssets = assets.filter((item) => item.mediaType === "image");
-  const sourceAssets = (stillAssets.length > 0 ? stillAssets : assets).slice(0, 6);
+  const sourceAssets = Array.from({ length: 6 }, (_, index) => ({
+    id: `marquee-${index + 1}`,
+    title: `竖构图素材 ${String(index + 1).padStart(2, "0")}`,
+    mediaType: "image",
+    mediaUrl: `/aigc-assets/marquee/marquee-${String(index + 1).padStart(2, "0")}.webp`,
+    model: "Marquee",
+    category: "全局预览",
+    scene: "竖构图素材循环",
+    hasPrompt: false,
+    prompt: "",
+    tags: ["竖构图", "循环展示"],
+    gradient: "linear-gradient(135deg, #eaf3ff 0%, #d7ebff 48%, #b9dcff 100%)",
+    accent: "#0078d4",
+  }));
   const marqueeAssets = [...sourceAssets, ...sourceAssets, ...sourceAssets, ...sourceAssets];
 
   return (
