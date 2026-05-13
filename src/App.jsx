@@ -5,10 +5,10 @@ const theme = {
   text: "#201f1e",
   subText: "#605e5c",
   muted: "#8a8886",
-  border: "#edebe9",
-  canvas: "#f3f2f1",
-  panel: "rgba(255,255,255,0.94)",
-  soft: "#faf9f8",
+  border: "rgba(255,255,255,0.46)",
+  canvas: "#edf2f7",
+  panel: "rgba(255,255,255,0.52)",
+  soft: "rgba(255,255,255,0.34)",
 };
 
 const mediaTypes = ["image", "gif", "video"];
@@ -210,7 +210,17 @@ function Icon({ name, size = 18, className = "", filled = false }) {
 
 function Panel({ children, className = "", style = {} }) {
   return (
-    <div className={cn("rounded-2xl border p-4 backdrop-blur", className)} style={{ background: theme.panel, borderColor: theme.border, boxShadow: "0 6px 18px rgba(0,0,0,0.06)", ...style }}>
+    <div
+      className={cn("rounded-[28px] border p-4 backdrop-blur-2xl", className)}
+      style={{
+        background: "linear-gradient(135deg, rgba(255,255,255,0.58) 0%, rgba(255,255,255,0.34) 100%)",
+        borderColor: "rgba(255,255,255,0.46)",
+        boxShadow: "0 10px 30px rgba(31,38,135,0.10), inset 0 1px 0 rgba(255,255,255,0.55)",
+        WebkitBackdropFilter: "blur(22px)",
+        backdropFilter: "blur(22px)",
+        ...style,
+      }}
+    >
       {children}
     </div>
   );
@@ -332,7 +342,16 @@ function AssetCard({ item, index, onToggleFavorite, isFocused, hasFocusedAsset, 
 
 function FilterPill({ active, children, onClick }) {
   return (
-    <button onClick={onClick} className="rounded-md px-4 py-2 text-sm font-medium transition" style={{ background: active ? theme.blue : theme.soft, color: active ? "white" : theme.subText, border: `1px solid ${active ? theme.blue : theme.border}`, boxShadow: active ? "0 3px 10px rgba(0,120,212,.22)" : "none" }}>
+    <button
+      onClick={onClick}
+      className="rounded-xl px-4 py-2 text-sm font-medium transition backdrop-blur-xl"
+      style={{
+        background: active ? "rgba(0,120,212,0.92)" : "rgba(255,255,255,0.34)",
+        color: active ? "white" : theme.subText,
+        border: `1px solid ${active ? "rgba(0,120,212,.95)" : "rgba(255,255,255,.44)"}`,
+        boxShadow: active ? "0 6px 16px rgba(0,120,212,.22)" : "inset 0 1px 0 rgba(255,255,255,.48)",
+      }}
+    >
       {children}
     </button>
   );
@@ -542,11 +561,11 @@ export default function AIGCAssetLibrary() {
   }
 
   return (
-    <div className="min-h-screen font-sans" style={{ background: theme.canvas, color: theme.text }}>
-      <div className="pointer-events-none fixed inset-0 overflow-hidden"><div className="absolute left-0 top-0 h-72 w-72 rounded-full blur-3xl" style={{ background: "rgba(222,236,249,.7)" }} /><div className="absolute right-0 top-20 h-80 w-80 rounded-full blur-3xl" style={{ background: "rgba(199,224,244,.55)" }} /></div>
+    <div className="min-h-screen font-sans" style={{ background: "linear-gradient(180deg, #eef4f8 0%, #e8edf3 45%, #f2f4f7 100%)", color: theme.text }}>
+      <div className="pointer-events-none fixed inset-0 overflow-hidden"><div className="absolute -left-16 top-0 h-96 w-96 rounded-full blur-3xl" style={{ background: "rgba(199,224,244,.70)" }} /><div className="absolute right-0 top-20 h-96 w-96 rounded-full blur-3xl" style={{ background: "rgba(218,232,252,.62)" }} /><div className="absolute bottom-0 left-1/3 h-80 w-80 rounded-full blur-3xl" style={{ background: "rgba(255,255,255,.58)" }} /></div>
       <div className="fixed left-0 top-0 z-50 hidden h-screen w-4 lg:block"><button type="button" aria-label="打开侧栏" onClick={() => setIsSidebarOpen(true)} onMouseEnter={() => setIsSidebarOpen(true)} className="absolute left-0 top-1/2 h-24 w-2 -translate-y-1/2 rounded-r-md border-y border-r bg-white shadow transition-all duration-300 hover:w-3" style={{ borderColor: theme.border, opacity: isSidebarOpen ? 0 : 1 }} /></div>
 
-      <aside onMouseEnter={() => setIsSidebarOpen(true)} onMouseLeave={() => setIsSidebarOpen(false)} className="fixed left-6 top-6 z-50 hidden h-[calc(100vh-48px)] w-72 rounded-2xl border p-5 backdrop-blur transition-all duration-300 lg:block" style={{ background: theme.panel, borderColor: theme.border, boxShadow: "0 8px 28px rgba(0,0,0,.14)", opacity: isSidebarOpen ? 1 : 0, transform: getSidebarTransform(isSidebarOpen), pointerEvents: getSidebarPointerState(isSidebarOpen) }}>
+      <aside onMouseEnter={() => setIsSidebarOpen(true)} onMouseLeave={() => setIsSidebarOpen(false)} className="fixed left-6 top-6 z-50 hidden h-[calc(100vh-48px)] w-72 rounded-2xl border p-5 backdrop-blur transition-all duration-300 lg:block" style={{ background: "linear-gradient(180deg, rgba(255,255,255,0.60) 0%, rgba(255,255,255,0.42) 100%)", borderColor: "rgba(255,255,255,0.42)", boxShadow: "0 12px 32px rgba(31,38,135,0.12), inset 0 1px 0 rgba(255,255,255,.52)", WebkitBackdropFilter: "blur(24px)", backdropFilter: "blur(24px)", opacity: isSidebarOpen ? 1 : 0, transform: getSidebarTransform(isSidebarOpen), pointerEvents: getSidebarPointerState(isSidebarOpen) }}>
         <div className="mb-10 flex items-center gap-3 px-2"><div className="flex h-11 w-11 items-center justify-center rounded-xl text-white" style={{ background: theme.blue, boxShadow: "0 4px 12px rgba(0,120,212,.28)" }}><Icon name="sparkle" size={20} /></div><div><div className="text-lg font-semibold tracking-tight">AIGC Library</div><div className="text-xs" style={{ color: theme.subText }}>图片 · 动态 · Prompt</div></div></div>
         <nav className="space-y-2">
           {navItems.map((item) => {
@@ -559,18 +578,72 @@ export default function AIGCAssetLibrary() {
       </aside>
 
       <main className="relative mx-auto max-w-[1440px] px-6 py-6">
-        <Panel className="mb-6 p-6 md:p-8">
+        <Panel className="mb-6 p-6 md:p-8" style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.64) 0%, rgba(255,255,255,0.36) 100%)" }}>
           <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
             <div><div className="mb-3 inline-flex items-center gap-2 rounded-md border px-3 py-1 text-xs font-medium" style={{ background: theme.soft, borderColor: theme.border, color: theme.subText }}><span className="h-1.5 w-1.5 rounded-full" style={{ background: "#107c10" }} />可部署框架版 · 无外部图片依赖</div><h1 className="max-w-3xl text-4xl font-semibold tracking-tight md:text-6xl">AIGC 素材资产库</h1><p className="mt-4 max-w-2xl text-base leading-7 md:text-lg" style={{ color: theme.subText }}>统一管理历史图片、GIF、视频片段与 Prompt。先跑通框架，后续直接替换真实素材与提示词。</p></div>
-            <div className="grid grid-cols-3 gap-3 rounded-2xl border p-3 md:min-w-[420px]" style={{ background: theme.soft, borderColor: theme.border }}>{[["全部素材", counts.all], ["动态素材", counts.motion], ["Prompt", counts.prompt]].map(([label, value]) => <div key={label} className="rounded-xl border bg-white px-4 py-4 text-center" style={{ borderColor: theme.border, boxShadow: "0 2px 8px rgba(0,0,0,.04)" }}><div className="text-2xl font-semibold tracking-tight">{value}</div><div className="mt-1 text-xs" style={{ color: theme.subText }}>{label}</div></div>)}</div>
+            <div className="grid grid-cols-3 gap-3 rounded-[24px] border p-3 md:min-w-[420px]" style={{ background: "rgba(255,255,255,0.22)", borderColor: "rgba(255,255,255,0.38)", boxShadow: "inset 0 1px 0 rgba(255,255,255,.45)" }}>{[["全部素材", counts.all], ["动态素材", counts.motion], ["Prompt", counts.prompt]].map(([label, value]) => <div key={label} className="rounded-[18px] border px-4 py-4 text-center backdrop-blur-xl" style={{ background: "rgba(255,255,255,0.42)", borderColor: "rgba(255,255,255,0.46)", boxShadow: "0 8px 20px rgba(31,38,135,0.08), inset 0 1px 0 rgba(255,255,255,.55)" }}><div className="text-2xl font-semibold tracking-tight">{value}</div><div className="mt-1 text-xs" style={{ color: theme.subText }}>{label}</div></div>)}</div>
           </div>
         </Panel>
 
-        <Panel className="mb-6">
-          <label className="mb-4 flex min-w-0 items-center gap-3 rounded-xl border px-4 py-3" style={{ background: theme.soft, borderColor: theme.border }}><Icon name="search" size={19} className="shrink-0" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索素材、模型、场景、标签或 Prompt" className="w-full bg-transparent text-sm outline-none" /></label>
-          <div className="mb-4 flex flex-wrap items-center gap-2">{quickFilters.map((filter) => <FilterPill key={filter.key} active={quickFilter === filter.key} onClick={() => setQuickFilter(filter.key)}>{filter.label}</FilterPill>)}<div className="ml-auto flex rounded-xl border p-1" style={{ background: theme.soft, borderColor: theme.border }}><button aria-label="网格视图" onClick={() => setViewMode("grid")} className="rounded-md p-2 transition" style={{ background: showGrid ? "white" : "transparent", color: showGrid ? theme.blue : theme.subText }}><Icon name="grid" size={16} /></button><button aria-label="列表视图" onClick={() => setViewMode("list")} className="rounded-md p-2 transition" style={{ background: !showGrid ? "white" : "transparent", color: !showGrid ? theme.blue : theme.subText }}><Icon name="rows" size={16} /></button></div></div>
-          <div className="grid gap-2 md:grid-cols-3">{filterGroups.map((group) => { const active = categoryFilter?.key === group.key; return <button key={group.key} onClick={() => setCategoryFilter(active ? null : { key: group.key, value: group.options[0] })} className="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold transition" style={{ background: active ? theme.blue : theme.soft, color: active ? "white" : theme.subText, border: `1px solid ${active ? theme.blue : theme.border}` }}><span>{active ? `${group.label}：${categoryFilter.value}` : group.label}</span><Icon name="down" size={14} className="opacity-70" /></button>; })}</div>
-          {categoryFilter ? <div className="mt-3 flex flex-wrap gap-2">{filterGroups.find((group) => group.key === categoryFilter.key)?.options.map((option) => <FilterPill key={option} active={categoryFilter.value === option} onClick={() => setCategoryFilter({ key: categoryFilter.key, value: option })}>{option}</FilterPill>)}</div> : null}
+        <Panel
+          className="relative mb-6 overflow-hidden p-5 md:p-6"
+          style={{
+            background: "linear-gradient(135deg, rgba(255,255,255,0.54) 0%, rgba(255,255,255,0.28) 100%)",
+            borderColor: "rgba(255,255,255,0.52)",
+            boxShadow: "0 14px 36px rgba(31,38,135,0.10), inset 0 1px 0 rgba(255,255,255,0.58)",
+            WebkitBackdropFilter: "blur(26px)",
+            backdropFilter: "blur(26px)",
+          }}
+        >
+          <div className="pointer-events-none absolute inset-0">
+            <div className="absolute -left-16 -top-12 h-44 w-44 rounded-full blur-3xl" style={{ background: "rgba(255,255,255,0.50)" }} />
+            <div className="absolute left-1/3 top-6 h-48 w-48 rounded-full blur-3xl" style={{ background: "rgba(186,212,255,0.34)" }} />
+            <div className="absolute -right-10 bottom-0 h-48 w-48 rounded-full blur-3xl" style={{ background: "rgba(255,255,255,0.42)" }} />
+          </div>
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background: "linear-gradient(180deg, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.08) 36%, rgba(255,255,255,0.02) 100%)",
+            }}
+          />
+
+          <div className="relative z-10">
+            <label
+              className="mb-5 flex min-w-0 items-center gap-3 rounded-2xl border px-4 py-3.5 backdrop-blur-2xl"
+              style={{
+                background: "rgba(255,255,255,0.36)",
+                borderColor: "rgba(255,255,255,0.50)",
+                boxShadow: "inset 0 1px 0 rgba(255,255,255,.58), 0 8px 22px rgba(31,38,135,.06)",
+              }}
+            >
+              <Icon name="search" size={19} className="shrink-0" />
+              <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索素材、模型、场景、标签或 Prompt" className="w-full bg-transparent text-sm outline-none" />
+            </label>
+
+            <div className="mb-5 flex flex-wrap items-center gap-2">
+              {quickFilters.map((filter) => <FilterPill key={filter.key} active={quickFilter === filter.key} onClick={() => setQuickFilter(filter.key)}>{filter.label}</FilterPill>)}
+              <div
+                className="ml-auto flex rounded-2xl border p-1 backdrop-blur-xl"
+                style={{
+                  background: "rgba(255,255,255,0.30)",
+                  borderColor: "rgba(255,255,255,0.44)",
+                  boxShadow: "inset 0 1px 0 rgba(255,255,255,.52)",
+                }}
+              >
+                <button aria-label="网格视图" onClick={() => setViewMode("grid")} className="rounded-xl p-2 transition" style={{ background: showGrid ? "rgba(255,255,255,0.74)" : "transparent", color: showGrid ? theme.blue : theme.subText, boxShadow: showGrid ? "0 4px 12px rgba(31,38,135,.08)" : "none" }}><Icon name="grid" size={16} /></button>
+                <button aria-label="列表视图" onClick={() => setViewMode("list")} className="rounded-xl p-2 transition" style={{ background: !showGrid ? "rgba(255,255,255,0.74)" : "transparent", color: !showGrid ? theme.blue : theme.subText, boxShadow: !showGrid ? "0 4px 12px rgba(31,38,135,.08)" : "none" }}><Icon name="rows" size={16} /></button>
+              </div>
+            </div>
+
+            <div className="grid gap-3 md:grid-cols-3">
+              {filterGroups.map((group) => {
+                const active = categoryFilter?.key === group.key;
+                return <button key={group.key} onClick={() => setCategoryFilter(active ? null : { key: group.key, value: group.options[0] })} className="flex items-center justify-between rounded-2xl px-4 py-3.5 text-sm font-semibold transition backdrop-blur-xl" style={{ background: active ? "rgba(0,120,212,0.92)" : "rgba(255,255,255,0.30)", color: active ? "white" : theme.subText, border: `1px solid ${active ? "rgba(0,120,212,.95)" : "rgba(255,255,255,.44)"}`, boxShadow: active ? "0 6px 16px rgba(0,120,212,.22)" : "inset 0 1px 0 rgba(255,255,255,.48)" }}><span>{active ? `${group.label}：${categoryFilter.value}` : group.label}</span><Icon name="down" size={14} className="opacity-70" /></button>;
+              })}
+            </div>
+
+            {categoryFilter ? <div className="mt-4 flex flex-wrap gap-2">{filterGroups.find((group) => group.key === categoryFilter.key)?.options.map((option) => <FilterPill key={option} active={categoryFilter.value === option} onClick={() => setCategoryFilter({ key: categoryFilter.key, value: option })}>{option}</FilterPill>)}</div> : null}
+          </div>
         </Panel>
 
         <SectionTitle activeSection={activeSection} filteredCount={filteredAssets.length} />
@@ -579,6 +652,9 @@ export default function AIGCAssetLibrary() {
       </main>
 
       <style>{`
+        .glass-surface { background: linear-gradient(135deg, rgba(255,255,255,0.58) 0%, rgba(255,255,255,0.32) 100%); border: 1px solid rgba(255,255,255,0.42); backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px); box-shadow: 0 10px 30px rgba(31,38,135,0.10), inset 0 1px 0 rgba(255,255,255,0.5); }
+        input::placeholder { color: rgba(96,94,92,.58); }
+
         @keyframes floatAsset { 0%, 100% { transform: translate3d(0, 0, 0) scale(1); } 50% { transform: translate3d(12px, -16px, 0) scale(1.08); } }
         @keyframes pulseLine { 0%, 100% { opacity: .35; transform: scaleX(.82); } 50% { opacity: .9; transform: scaleX(1); } }
         @keyframes marqueeLeft { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
