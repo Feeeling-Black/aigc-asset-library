@@ -502,7 +502,7 @@ function MotionGridView({ assets, onToggleFavorite, hoveredAssetId, selectedAsse
           onSelectAsset={onSelectAsset}
           onHoverStart={onHoverStart}
           onHoverEnd={onHoverEnd}
-          frameClassName="aspect-[4/3]"
+          frameClassName="aspect-[3/2]"
           showModelLabel={false}
           showPromptPanel={false}
         />
