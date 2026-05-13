@@ -538,7 +538,7 @@ function AssetMarquee({ assets }) {
       </div>
       <div className="marquee-track flex w-max gap-5 px-6 md:px-8">
         {marqueeAssets.map((item, index) => (
-          <div key={`${item.id}-${index}`} className="h-72 w-48 shrink-0 overflow-hidden rounded-2xl border bg-white" style={{ borderColor: theme.border, boxShadow: "0 6px 20px rgba(0,0,0,.07)" }}>
+          <div key={`${item.id}-${index}`} className="h-80 w-60 shrink-0 overflow-hidden rounded-2xl border bg-white" style={{ borderColor: theme.border, boxShadow: "0 6px 20px rgba(0,0,0,.07)" }}>
             <AssetPreview item={{ ...item, mediaType: "image" }} />
           </div>
         ))}
