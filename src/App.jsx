@@ -345,22 +345,23 @@ function ThumbnailTileWall() {
   const [hoveredThumb, setHoveredThumb] = useState(null);
   const cols = 28;
   const thumbCount = 196;
-  const colorSets = [
-    ["#6ee7ff", "#0ea5e9", "#075985"],
-    ["#c4b5fd", "#8b5cf6", "#312e81"],
-    ["#f9a8d4", "#ec4899", "#831843"],
-    ["#86efac", "#22c55e", "#14532d"],
-    ["#fde68a", "#f59e0b", "#78350f"],
-    ["#99f6e4", "#14b8a6", "#134e4a"],
-    ["#bfdbfe", "#3b82f6", "#1e3a8a"],
-    ["#fecaca", "#ef4444", "#7f1d1d"],
-  ];
+  const thumbnailItems = Array.from({ length: thumbCount }, (_, index) => promptLibraryAssets[index % promptLibraryAssets.length]);
+
   function getThumbStyle(index) {
     const row = Math.floor(index / cols);
     const col = index % cols;
     const edgeDistanceX = Math.min(col, cols - 1 - col) / (cols / 2);
     const edgeFade = clamp(edgeDistanceX * 1.85, 0.08, 1);
-    if (hoveredThumb === null) return { transform: "translate3d(0,0,0) scale(1)", zIndex: 1, opacity: 0.18 + edgeFade * 0.28, boxShadow: "inset 0 1px 0 rgba(255,255,255,.32)" };
+
+    if (hoveredThumb === null) {
+      return {
+        transform: "translate3d(0,0,0) scale(1)",
+        zIndex: 1,
+        opacity: 0.22 + edgeFade * 0.5,
+        boxShadow: "inset 0 1px 0 rgba(255,255,255,.32)",
+      };
+    }
+
     const hoverRow = Math.floor(hoveredThumb / cols);
     const hoverCol = hoveredThumb % cols;
     const dx = col - hoverCol;
@@ -369,24 +370,53 @@ function ThumbnailTileWall() {
     const safeDistance = Math.max(distance, 0.001);
     const influence = Math.max(0, 1 - distance / 6.4);
     const magnetic = influence * influence * (3 - 2 * influence);
-    if (index === hoveredThumb) return { transform: "translate3d(0,-10px,0) scale(3.55)", zIndex: 220, opacity: 1, filter: "saturate(1.16) brightness(1.08)", boxShadow: "0 28px 64px rgba(0,0,0,.22), 0 0 0 1px rgba(255,255,255,.32), 0 0 52px rgba(74,168,255,.14)" };
+
+    if (index === hoveredThumb) {
+      return {
+        transform: "translate3d(0,-10px,0) scale(3.55)",
+        zIndex: 220,
+        opacity: 1,
+        filter: "saturate(1.08) brightness(1.04)",
+        boxShadow: "0 28px 64px rgba(0,0,0,.22), 0 0 0 1px rgba(255,255,255,.32), 0 0 52px rgba(74,168,255,.14)",
+      };
+    }
+
     const directionX = dx / safeDistance;
     const directionY = dy / safeDistance;
-    return { transform: `translate3d(${directionX * magnetic * 24}px, ${directionY * magnetic * 24}px, 0) scale(${0.94 + (1 - magnetic) * 0.06})`, zIndex: Math.max(1, Math.round(magnetic * 64)), opacity: 0.12 + edgeFade * 0.18 + magnetic * 0.28, boxShadow: magnetic > 0.48 ? "0 8px 18px rgba(31,38,135,.08)" : "none" };
+    return {
+      transform: `translate3d(${directionX * magnetic * 24}px, ${directionY * magnetic * 24}px, 0) scale(${0.94 + (1 - magnetic) * 0.06})`,
+      zIndex: Math.max(1, Math.round(magnetic * 64)),
+      opacity: 0.14 + edgeFade * 0.24 + magnetic * 0.36,
+      filter: magnetic > 0.12 ? "saturate(.95) brightness(.94)" : "saturate(.72) brightness(.88)",
+      boxShadow: magnetic > 0.48 ? "0 8px 18px rgba(31,38,135,.08)" : "none",
+    };
   }
+
   return (
     <section className="thumbnail-inline-stage relative mb-6 overflow-hidden rounded-[28px] px-5 py-6 md:px-8">
       <div className="thumbnail-wall-shell relative z-10">
         <div className="grid gap-1.5 md:gap-2" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }} onMouseLeave={() => setHoveredThumb(null)}>
-          {Array.from({ length: thumbCount }, (_, index) => {
-            const palette = colorSets[index % colorSets.length];
+          {thumbnailItems.map((item, index) => {
             const isActive = hoveredThumb === index;
             return (
-              <button key={index} type="button" onMouseEnter={() => setHoveredThumb(index)} className={cn("thumbnail-tile relative aspect-[3/4] overflow-hidden outline-none", isActive ? "thumbnail-tile-active" : "")} style={{ ...getThumbStyle(index), borderRadius: "9px", background: `linear-gradient(${120 + (index % 10) * 18}deg, ${palette[0]} 0%, ${palette[1]} 52%, ${palette[2]} 100%)` }}>
-                <span className="thumbnail-frost absolute inset-0" style={{ background: isActive ? "linear-gradient(to bottom right, rgba(255,255,255,.08), rgba(255,255,255,.02), rgba(0,0,0,.06))" : "linear-gradient(to bottom right, rgba(255,255,255,.72), rgba(255,255,255,.40), rgba(255,255,255,.18))" }} />
+              <button
+                key={`${item.id}-thumb-${index}`}
+                type="button"
+                onMouseEnter={() => setHoveredThumb(index)}
+                className={cn("thumbnail-tile relative aspect-[3/4] overflow-hidden outline-none", isActive ? "thumbnail-tile-active" : "")}
+                style={{ ...getThumbStyle(index), borderRadius: "9px", background: "rgba(255,255,255,.28)" }}
+                aria-label={`Prompt 缩略图 ${index + 1}`}
+              >
+                <img src={item.mediaUrl} alt={item.title} className="h-full w-full object-cover" draggable={false} loading="lazy" />
+                <span
+                  className="thumbnail-frost absolute inset-0"
+                  style={{
+                    background: isActive
+                      ? "linear-gradient(to bottom right, rgba(255,255,255,.02), rgba(255,255,255,.01), rgba(0,0,0,.04))"
+                      : "linear-gradient(to bottom right, rgba(255,255,255,.50), rgba(255,255,255,.26), rgba(255,255,255,.10))",
+                  }}
+                />
                 <span className="thumbnail-glint pointer-events-none absolute inset-y-0 -left-[120%] w-[80%] rotate-12 bg-gradient-to-r from-transparent via-white/44 to-transparent" />
-                <span className="absolute left-[12%] top-[13%] h-[25%] w-[44%] rounded-lg bg-white/20" />
-                <span className="absolute bottom-[13%] right-[13%] h-[26%] w-[29%] rounded-full bg-white/13" />
               </button>
             );
           })}
