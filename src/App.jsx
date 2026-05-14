@@ -768,10 +768,11 @@ export default function AIGCAssetLibrary() {
     <div className="animated-page-bg min-h-screen font-sans" style={{ color: theme.text }}>
       <div className="pointer-events-none fixed -inset-40 overflow-hidden">
         <div className="ambient-wash absolute -inset-32" />
-        <div className="ambient-orb ambient-orb-a absolute -left-6 top-4 h-[34rem] w-[34rem] rounded-full blur-3xl" style={{ background: "rgba(93,171,255,.42)" }} />
-        <div className="ambient-orb ambient-orb-b absolute right-0 top-16 h-[38rem] w-[38rem] rounded-full blur-3xl" style={{ background: "rgba(171,219,255,.48)" }} />
-        <div className="ambient-orb ambient-orb-c absolute bottom-0 left-1/4 h-[32rem] w-[32rem] rounded-full blur-3xl" style={{ background: "rgba(255,255,255,.72)" }} />
-        <div className="ambient-sheen absolute -inset-32 opacity-90" />
+        <div className="ambient-orb ambient-orb-a absolute -left-12 top-0 h-[38rem] w-[38rem] rounded-full blur-3xl" style={{ background: "rgba(0,120,212,.46)" }} />
+        <div className="ambient-orb ambient-orb-b absolute right-[-6rem] top-10 h-[42rem] w-[42rem] rounded-full blur-3xl" style={{ background: "rgba(132,118,255,.40)" }} />
+        <div className="ambient-orb ambient-orb-c absolute bottom-[-8rem] left-1/4 h-[38rem] w-[38rem] rounded-full blur-3xl" style={{ background: "rgba(0,188,242,.30)" }} />
+        <div className="ambient-orb ambient-orb-d absolute bottom-20 right-1/4 h-[30rem] w-[30rem] rounded-full blur-3xl" style={{ background: "rgba(255,255,255,.62)" }} />
+        <div className="ambient-sheen absolute -inset-32 opacity-100" />
       </div>
       <div className="fixed left-0 top-0 z-50 hidden h-screen w-4 lg:block"><button type="button" aria-label="打开侧栏" onClick={() => setIsSidebarOpen(true)} onMouseEnter={() => setIsSidebarOpen(true)} className="absolute left-0 top-1/2 h-24 w-2 -translate-y-1/2 rounded-r-md border-y border-r bg-white shadow transition-all duration-300 hover:w-3" style={{ borderColor: theme.border, opacity: isSidebarOpen ? 0 : 1 }} /></div>
 
@@ -811,18 +812,22 @@ export default function AIGCAssetLibrary() {
 
       <style>{`
         input::placeholder { color: rgba(96,94,92,.58); }
-        .animated-page-bg { background: linear-gradient(180deg, rgba(239,247,255,1) 0%, rgba(226,236,246,1) 46%, rgba(242,244,247,1) 100%); position: relative; overflow-x: hidden; }
-        .animated-page-bg::before { content: ""; position: fixed; inset: -34%; pointer-events: none; background: radial-gradient(circle at 18% 20%, rgba(0,120,212,.18), transparent 24%), radial-gradient(circle at 72% 18%, rgba(124,94,255,.14), transparent 24%), radial-gradient(circle at 48% 78%, rgba(0,188,242,.12), transparent 28%); filter: blur(8px); opacity: .9; animation: backgroundBreath 12s ease-in-out infinite; will-change: transform, opacity; }
-        .ambient-wash { background: radial-gradient(circle at 16% 12%, rgba(0,120,212,.22), transparent 25%), radial-gradient(circle at 88% 8%, rgba(132,118,255,.18), transparent 27%), radial-gradient(circle at 42% 70%, rgba(0,188,242,.16), transparent 28%), linear-gradient(120deg, rgba(255,255,255,.18), transparent 48%, rgba(255,255,255,.22)); opacity: .9; animation: ambientWashMove 11s ease-in-out infinite; will-change: transform, opacity; }
-        @keyframes backgroundBreath { 0%, 100% { transform: translate3d(0,0,0) scale(1); opacity: .72; } 50% { transform: translate3d(2.5%,-1.5%,0) scale(1.08); opacity: 1; } }
-        @keyframes ambientWashMove { 0%, 100% { transform: translate3d(-2%,-1%,0) scale(1); opacity: .76; } 50% { transform: translate3d(2%,1.5%,0) scale(1.06); opacity: 1; } }
-        @keyframes ambientDriftA { 0%, 100% { transform: translate3d(-28px,0,0) scale(1.04); } 50% { transform: translate3d(64px,42px,0) scale(1.16); } }
-        @keyframes ambientDriftB { 0%, 100% { transform: translate3d(28px,0,0) scale(1.04); } 50% { transform: translate3d(-72px,54px,0) scale(1.12); } }
-        @keyframes ambientSheen { 0%, 100% { opacity: .56; transform: translateX(-4%) translateY(-1%); } 50% { opacity: .95; transform: translateX(4%) translateY(1%); } }
-        .ambient-orb-a { animation: ambientDriftA 12s ease-in-out infinite; }
-        .ambient-orb-b { animation: ambientDriftB 14s ease-in-out infinite; }
-        .ambient-orb-c { animation: ambientDriftA 13s ease-in-out infinite reverse; }
-        .ambient-sheen { background: radial-gradient(circle at 20% 18%, rgba(255,255,255,.55), transparent 28%), radial-gradient(circle at 82% 16%, rgba(255,255,255,.42), transparent 24%), linear-gradient(115deg, transparent 0%, rgba(255,255,255,.34) 42%, transparent 68%); animation: ambientSheen 9s ease-in-out infinite; }
+        .animated-page-bg { background: linear-gradient(180deg, #eef8ff 0%, #e4eef9 44%, #f5f7fb 100%); position: relative; overflow-x: hidden; }
+        .animated-page-bg::before { content: ""; position: fixed; inset: -38%; pointer-events: none; background: radial-gradient(circle at 16% 18%, rgba(0,120,212,.28), transparent 24%), radial-gradient(circle at 78% 14%, rgba(124,94,255,.24), transparent 26%), radial-gradient(circle at 50% 82%, rgba(0,188,242,.22), transparent 30%), radial-gradient(circle at 34% 46%, rgba(255,255,255,.72), transparent 24%); filter: blur(10px); opacity: 1; animation: backgroundBreath 8s ease-in-out infinite; will-change: transform, opacity; }
+        .animated-page-bg::after { content: ""; position: fixed; inset: -20%; pointer-events: none; background: linear-gradient(115deg, transparent 0%, rgba(255,255,255,.28) 34%, rgba(157,210,255,.18) 46%, transparent 62%), radial-gradient(circle at 70% 30%, rgba(255,255,255,.40), transparent 22%); mix-blend-mode: screen; opacity: .72; animation: backgroundSweep 7s ease-in-out infinite; will-change: transform, opacity; }
+        .ambient-wash { background: radial-gradient(circle at 16% 12%, rgba(0,120,212,.34), transparent 25%), radial-gradient(circle at 88% 8%, rgba(132,118,255,.30), transparent 27%), radial-gradient(circle at 42% 70%, rgba(0,188,242,.24), transparent 28%), linear-gradient(120deg, rgba(255,255,255,.32), transparent 48%, rgba(255,255,255,.34)); opacity: 1; animation: ambientWashMove 8.5s ease-in-out infinite; will-change: transform, opacity; }
+        @keyframes backgroundBreath { 0%, 100% { transform: translate3d(-1%,0,0) scale(1); opacity: .82; } 50% { transform: translate3d(4%,-2.5%,0) scale(1.12); opacity: 1; } }
+        @keyframes backgroundSweep { 0%, 100% { transform: translate3d(-8%,-2%,0) rotate(0deg); opacity: .42; } 50% { transform: translate3d(8%,2%,0) rotate(4deg); opacity: .9; } }
+        @keyframes ambientWashMove { 0%, 100% { transform: translate3d(-3%,-2%,0) scale(1); opacity: .86; } 50% { transform: translate3d(3%,2.5%,0) scale(1.1); opacity: 1; } }
+        @keyframes ambientDriftA { 0%, 100% { transform: translate3d(-38px,-12px,0) scale(1.02); } 50% { transform: translate3d(88px,58px,0) scale(1.22); } }
+        @keyframes ambientDriftB { 0%, 100% { transform: translate3d(34px,-10px,0) scale(1.02); } 50% { transform: translate3d(-96px,68px,0) scale(1.18); } }
+        @keyframes ambientSheen { 0%, 100% { opacity: .62; transform: translateX(-8%) translateY(-2%) scale(1); } 50% { opacity: 1; transform: translateX(8%) translateY(2%) scale(1.04); } }
+        .ambient-orb { mix-blend-mode: screen; opacity: .95; }
+        .ambient-orb-a { animation: ambientDriftA 8.5s ease-in-out infinite; }
+        .ambient-orb-b { animation: ambientDriftB 9.5s ease-in-out infinite; }
+        .ambient-orb-c { animation: ambientDriftA 10s ease-in-out infinite reverse; }
+        .ambient-orb-d { animation: ambientDriftB 8s ease-in-out infinite reverse; }
+        .ambient-sheen { background: radial-gradient(circle at 20% 18%, rgba(255,255,255,.72), transparent 28%), radial-gradient(circle at 82% 16%, rgba(255,255,255,.58), transparent 24%), linear-gradient(115deg, transparent 0%, rgba(255,255,255,.48) 42%, transparent 68%); animation: ambientSheen 6.5s ease-in-out infinite; }
         @keyframes floatAsset { 0%, 100% { transform: translate3d(0,0,0) scale(1); } 50% { transform: translate3d(12px,-16px,0) scale(1.08); } }
         @keyframes pulseLine { 0%, 100% { opacity: .35; transform: scaleX(.82); } 50% { opacity: .9; transform: scaleX(1); } }
         @keyframes marqueeLeft { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
@@ -843,7 +848,7 @@ export default function AIGCAssetLibrary() {
         .thumbnail-tile-active .thumbnail-glint { animation: thumbnailGlint 680ms cubic-bezier(.22,1,.36,1) both; }
         @keyframes thumbnailGlint { 0% { transform: translateX(0) rotate(12deg); opacity: 0; } 18% { opacity: .75; } 100% { transform: translateX(330%) rotate(12deg); opacity: 0; } }
         .prompt-hover-panel:hover { transform: translateY(0) scale(1.015); }
-        @media (prefers-reduced-motion: reduce) { .ambient-orb, .ambient-wash, .ambient-sheen, .animated-page-bg::before, .motion-orb, .motion-block, .motion-line, .marquee-track { animation: none !important; } }
+        @media (prefers-reduced-motion: reduce) { .ambient-orb, .ambient-wash, .ambient-sheen, .animated-page-bg::before, .animated-page-bg::after, .motion-orb, .motion-block, .motion-line, .marquee-track { animation: none !important; } }
       `}</style>
     </div>
   );
