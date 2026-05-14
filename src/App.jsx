@@ -544,6 +544,9 @@ function PromptAssetCard({ item, index, onToggleFavorite, hoveredPromptId, onHov
   const [copied, setCopied] = useState(false);
   const { visible, depth, interactive } = panelState;
   const isDimmed = Boolean(hoveredPromptId && hoveredPromptId !== item.id);
+  const serialNumber = String(item.id || "").startsWith("prompt-")
+    ? String(item.id).replace("prompt-", "")
+    : String(index + 1).padStart(3, "0");
 
   function handlePointerMove(event) {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -595,6 +598,16 @@ function PromptAssetCard({ item, index, onToggleFavorite, hoveredPromptId, onHov
         }}
       >
         <AssetPreview item={item} />
+
+        <div
+          className="pointer-events-none absolute left-3 top-3 z-30 text-[10px] font-semibold tracking-[0.14em]"
+          style={{
+            color: "rgba(255,255,255,.72)",
+            textShadow: "0 1px 4px rgba(0,0,0,.22)",
+          }}
+        >
+          {serialNumber}
+        </div>
 
         <div className="absolute inset-x-0 top-0 z-30 flex items-center justify-end p-4">
           <button
