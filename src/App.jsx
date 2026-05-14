@@ -1184,7 +1184,7 @@ export default function AIGCAssetLibrary() {
         .motion-orb { animation: floatAsset 3.2s ease-in-out infinite; }
         .motion-block { animation: floatAsset 4.5s ease-in-out infinite; }
         .motion-line { animation: pulseLine 2.4s ease-in-out infinite; }
-        
+        .marquee-track { animation-duration: 32s; animation-timing-function: linear; animation-iteration-count: infinite; }
         .marquee-left { animation-name: marqueeLeft; }
         .marquee-right { animation-name: marqueeRight; }
         .marquee-track:hover { animation-play-state: paused; }
