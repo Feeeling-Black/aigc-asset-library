@@ -916,7 +916,7 @@ export default function AIGCAssetLibrary() {
         setViewMode={setViewMode}
       />
 
-      <main className="relative mx-auto max-w-[1440px] px-6 py-6 xl:pr-[270px]">
+      <main className="relative mx-auto max-w-[1440px] px-6 py-6">
         <Panel className="mb-6 p-6 md:p-8" style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.64) 0%, rgba(255,255,255,0.36) 100%)" }}>
           <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
             <div><div className="mb-3 inline-flex items-center gap-2 rounded-md border px-3 py-1 text-xs font-medium" style={{ background: theme.soft, borderColor: theme.border, color: theme.subText }}><span className="h-1.5 w-1.5 rounded-full" style={{ background: "#107c10" }} />可部署框架版 · 无外部图片依赖</div><h1 className="max-w-3xl text-4xl font-semibold tracking-tight md:text-6xl">AIGC 素材资产库</h1><p className="mt-4 max-w-2xl text-base leading-7 md:text-lg" style={{ color: theme.subText }}>统一管理历史图片、GIF、视频片段与 Prompt。先跑通框架，后续直接替换真实素材与提示词。</p></div>
