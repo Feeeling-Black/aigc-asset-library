@@ -504,10 +504,11 @@ function GlobalPreviewGridView({ assets, onToggleFavorite }) {
   );
 }
 
-function PromptAssetCard({ item, index, onToggleFavorite }) {
+function PromptAssetCard({ item, index, onToggleFavorite, hoveredPromptId, onHoverPrompt, onLeavePrompt }) {
   const [panelState, setPanelState] = useState({ visible: false, depth: 0, interactive: false });
   const [copied, setCopied] = useState(false);
   const { visible, depth, interactive } = panelState;
+  const isDimmed = Boolean(hoveredPromptId && hoveredPromptId !== item.id);
 
   function handlePointerMove(event) {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -538,15 +539,20 @@ function PromptAssetCard({ item, index, onToggleFavorite }) {
 
   return (
     <article
+      onMouseEnter={() => onHoverPrompt(item.id)}
+      onMouseLeave={() => onLeavePrompt()}
       className="group cursor-pointer overflow-hidden rounded-2xl border bg-white transition duration-500 hover:-translate-y-1 hover:shadow-2xl"
       style={{
         borderColor: theme.border,
         animationDelay: `${index * 45}ms`,
-        boxShadow: "0 8px 26px rgba(0,0,0,.06)",
+        boxShadow: isDimmed ? "0 4px 16px rgba(0,0,0,.04)" : "0 8px 26px rgba(0,0,0,.06)",
+        opacity: isDimmed ? 0.42 : 1,
+        filter: isDimmed ? "brightness(.58) saturate(.62)" : "brightness(1) saturate(1)",
+        transform: isDimmed ? "scale(.985)" : undefined,
       }}
     >
       <div
-        className="relative aspect-[4/5] overflow-hidden bg-gray-100"
+        className="relative aspect-[3/4] overflow-hidden bg-gray-100"
         onPointerMove={handlePointerMove}
         onPointerLeave={() => {
           setPanelState({ visible: false, depth: 0, interactive: false });
@@ -633,6 +639,7 @@ function PromptAssetCard({ item, index, onToggleFavorite }) {
 }
 
 function PromptLibraryView({ assets, viewMode, onToggleFavorite }) {
+  const [hoveredPromptId, setHoveredPromptId] = useState(null);
   const promptAssets = assets.filter((asset) => asset.id?.startsWith("prompt-") && asset.hasPrompt);
 
   if (promptAssets.length === 0) return <EmptyState />;
@@ -642,8 +649,18 @@ function PromptLibraryView({ assets, viewMode, onToggleFavorite }) {
   }
 
   return (
-    <section className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-      {promptAssets.map((item, index) => <PromptAssetCard key={item.id} item={item} index={index} onToggleFavorite={onToggleFavorite} />)}
+    <section className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3" onMouseLeave={() => setHoveredPromptId(null)}>
+      {promptAssets.map((item, index) => (
+        <PromptAssetCard
+          key={item.id}
+          item={item}
+          index={index}
+          onToggleFavorite={onToggleFavorite}
+          hoveredPromptId={hoveredPromptId}
+          onHoverPrompt={setHoveredPromptId}
+          onLeavePrompt={() => setHoveredPromptId(null)}
+        />
+      ))}
     </section>
   );
 }
