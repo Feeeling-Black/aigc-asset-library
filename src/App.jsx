@@ -775,9 +775,9 @@ function MotionGridView({ assets, onToggleFavorite, hoveredAssetId, selectedAsse
 }
 
 function AssetMarquee({ assets }) {
-  const sourceAssets = Array.from({ length: 6 }, (_, index) => ({
-    id: `marquee-${index + 1}`,
-    title: `竖构图素材 ${String(index + 1).padStart(2, "0")}`,
+  const leftSourceAssets = Array.from({ length: 6 }, (_, index) => ({
+    id: `marquee-left-${index + 1}`,
+    title: `左向循环素材 ${String(index + 1).padStart(2, "0")}`,
     mediaType: "image",
     mediaUrl: `/aigc-assets/marquee/marquee-${String(index + 1).padStart(2, "0")}.webp`,
     model: "Marquee",
@@ -785,12 +785,29 @@ function AssetMarquee({ assets }) {
     scene: "竖构图素材循环",
     hasPrompt: false,
     prompt: "",
-    tags: ["竖构图", "循环展示"],
+    tags: ["竖构图", "向左循环"],
     gradient: "linear-gradient(135deg, #eaf3ff 0%, #d7ebff 48%, #b9dcff 100%)",
     accent: "#0078d4",
   }));
-  const marqueeAssets = [...sourceAssets, ...sourceAssets, ...sourceAssets, ...sourceAssets];
-  const reverseMarqueeAssets = [...sourceAssets].reverse().flatMap((item) => [item, item, item, item]);
+
+  const rightSourceAssets = Array.from({ length: 6 }, (_, index) => ({
+    id: `marquee-right-${index + 1}`,
+    title: `右向循环素材 ${String(index + 1).padStart(2, "0")}`,
+    mediaType: "image",
+    mediaUrl: `/aigc-assets/marquee-right/marquee-right-${String(index + 1).padStart(2, "0")}.webp`,
+    model: "Marquee",
+    category: "全局预览",
+    scene: "竖构图素材循环",
+    hasPrompt: false,
+    prompt: "",
+    tags: ["竖构图", "向右循环"],
+    gradient: "linear-gradient(135deg, #f5f0ff 0%, #e6dcff 48%, #c7b4f7 100%)",
+    accent: "#8661c5",
+  }));
+
+  const repeatAssets = (items) => [...items, ...items, ...items, ...items];
+  const leftMarqueeAssets = repeatAssets(leftSourceAssets);
+  const rightMarqueeAssets = repeatAssets(rightSourceAssets);
 
   function renderMarqueeRow(items, directionClassName) {
     return (
@@ -810,11 +827,11 @@ function AssetMarquee({ assets }) {
       <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-28 bg-gradient-to-l from-white to-transparent" />
       <div className="mb-8 px-6 text-center md:px-8">
         <h3 className="text-2xl font-semibold tracking-[-0.035em] md:text-4xl" style={{ color: theme.text }}>竖构图素材循环</h3>
-        <p className="mx-auto mt-4 max-w-2xl text-base leading-7 md:text-lg md:leading-8" style={{ color: theme.subText }}>精选六张竖构图静态图片循环展示，先建立整体视觉印象，再进入下方分类内容查看细节。</p>
+        <p className="mx-auto mt-4 max-w-2xl text-base leading-7 md:text-lg md:leading-8" style={{ color: theme.subText }}>精选竖构图静态图片循环展示，先建立整体视觉印象，再进入下方分类内容查看细节。</p>
       </div>
       <div className="space-y-5">
-        {renderMarqueeRow(marqueeAssets, "marquee-left")}
-        {renderMarqueeRow(reverseMarqueeAssets, "marquee-right")}
+        {renderMarqueeRow(leftMarqueeAssets, "marquee-left")}
+        {renderMarqueeRow(rightMarqueeAssets, "marquee-right")}
       </div>
     </div>
   );
@@ -1167,7 +1184,7 @@ export default function AIGCAssetLibrary() {
         .motion-orb { animation: floatAsset 3.2s ease-in-out infinite; }
         .motion-block { animation: floatAsset 4.5s ease-in-out infinite; }
         .motion-line { animation: pulseLine 2.4s ease-in-out infinite; }
-        .marquee-track { animation-duration: 32s; animation-timing-function: linear; animation-iteration-count: infinite; }
+        
         .marquee-left { animation-name: marqueeLeft; }
         .marquee-right { animation-name: marqueeRight; }
         .marquee-track:hover { animation-play-state: paused; }
