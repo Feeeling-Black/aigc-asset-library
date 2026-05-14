@@ -444,6 +444,8 @@ function GlobalPreviewGridView({ assets, onToggleFavorite }) {
   const modelPreviewAssets = [
     { id: "model-01", title: "模型类主展示图 01", mediaType: "image", mediaUrl: "/aigc-assets/model/model-01.webp", model: "Model Preview", category: "模型类", scene: "主展示图", hasPrompt: false, prompt: "", tags: ["模型类", "主展示"], gradient: "linear-gradient(135deg, #eaf3ff 0%, #d7ebff 48%, #b9dcff 100%)", accent: "#0078d4" },
     { id: "model-02", title: "模型类主展示图 02", mediaType: "image", mediaUrl: "/aigc-assets/model/model-02.webp", model: "Model Preview", category: "模型类", scene: "主展示图", hasPrompt: false, prompt: "", tags: ["模型类", "主展示"], gradient: "linear-gradient(135deg, #f5f0ff 0%, #e6dcff 48%, #c7b4f7 100%)", accent: "#8661c5" },
+    { id: "model-03", title: "模型类主展示图 03", mediaType: "image", mediaUrl: "/aigc-assets/model/model-03.webp", model: "Model Preview", category: "模型类", scene: "主展示图", hasPrompt: false, prompt: "", tags: ["模型类", "主展示"], gradient: "linear-gradient(135deg, #eef6fc 0%, #c7e0f4 48%, #8abde6 100%)", accent: "#00a2ed" },
+    { id: "model-04", title: "模型类主展示图 04", mediaType: "image", mediaUrl: "/aigc-assets/model/model-04.webp", model: "Model Preview", category: "模型类", scene: "主展示图", hasPrompt: false, prompt: "", tags: ["模型类", "主展示"], gradient: "linear-gradient(135deg, #e5f5ec 0%, #c7ebd1 48%, #8fd19e 100%)", accent: "#107c10" },
   ];
   const renderAssetCard = (item, index, frameClassName = "aspect-square") => <AssetCard key={`${item.id}-${index}`} item={item} index={index} onToggleFavorite={onToggleFavorite} frameClassName={frameClassName} showModelLabel={false} />;
   return (
@@ -458,7 +460,7 @@ function GlobalPreviewGridView({ assets, onToggleFavorite }) {
           <div className="grid gap-5 lg:grid-cols-2">{renderAssetCard(overviewHeroAssets[0], 0, "aspect-[3/2]")}{renderAssetCard(overviewHeroAssets[1], 1, "aspect-[3/2]")}</div>
           <div>
             <div className="mb-4 flex items-end justify-between gap-4"><div><h4 className="text-2xl font-semibold tracking-[-0.035em] md:text-3xl" style={{ color: theme.text }}>模型类</h4><p className="mt-3 max-w-2xl text-base leading-7 md:text-lg md:leading-8" style={{ color: theme.subText }}>按不同生成模型沉淀代表性画面，方便横向比较模型风格、质感控制和画面稳定性。</p></div><span className="hidden rounded-full px-3 py-1 text-xs font-medium md:block" style={{ background: theme.soft, color: theme.subText, border: `1px solid ${theme.border}` }}>2 Column</span></div>
-            <div className="grid gap-5 sm:grid-cols-2">{[...modelPreviewAssets, ...showcaseAssets.slice(4, 8)].map((item, index) => renderAssetCard(item, index + 2, "aspect-[3/4]"))}</div>
+            <div className="grid gap-5 sm:grid-cols-2">{[...modelPreviewAssets, ...showcaseAssets.slice(6, 8)].map((item, index) => renderAssetCard(item, index + 2, "aspect-[3/4]"))}</div>
           </div>
           <div>
             <div className="mb-4 flex items-end justify-between gap-4"><div><h4 className="text-2xl font-semibold tracking-[-0.035em] md:text-3xl" style={{ color: theme.text }}>功能类</h4><p className="mt-3 max-w-2xl text-base leading-7 md:text-lg md:leading-8" style={{ color: theme.subText }}>围绕防晒、凉感、透气、蓬松、抗菌等功能表达归档素材，适合后续快速复用到商品卖点和视觉提案。</p></div><span className="hidden rounded-full px-3 py-1 text-xs font-medium md:block" style={{ background: theme.soft, color: theme.subText, border: `1px solid ${theme.border}` }}>2 Column</span></div>
