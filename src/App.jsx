@@ -287,6 +287,117 @@ function FilterPill({ active, children, onClick }) {
   );
 }
 
+function FloatingFilterRail({ query, setQuery, quickFilter, setQuickFilter, categoryFilter, setCategoryFilter, viewMode, setViewMode }) {
+  const showGrid = viewMode === "grid";
+
+  return (
+    <aside
+      className="fixed right-5 top-1/2 z-40 hidden w-56 -translate-y-1/2 rounded-[28px] border p-3 backdrop-blur-2xl xl:block"
+      style={{
+        background: "linear-gradient(180deg, rgba(255,255,255,0.62) 0%, rgba(255,255,255,0.36) 100%)",
+        borderColor: "rgba(255,255,255,0.54)",
+        boxShadow: "0 18px 46px rgba(31,38,135,0.14), inset 0 1px 0 rgba(255,255,255,.62)",
+        WebkitBackdropFilter: "blur(26px)",
+        backdropFilter: "blur(26px)",
+      }}
+    >
+      <label
+        className="mb-3 flex items-center gap-2 rounded-2xl border px-3 py-3 backdrop-blur-xl"
+        style={{
+          background: "rgba(255,255,255,0.42)",
+          borderColor: "rgba(255,255,255,0.56)",
+          boxShadow: "inset 0 1px 0 rgba(255,255,255,.62)",
+        }}
+      >
+        <Icon name="search" size={17} className="shrink-0" />
+        <input
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder="搜索"
+          className="w-full bg-transparent text-sm outline-none"
+        />
+      </label>
+
+      <div className="mb-3 grid grid-cols-2 gap-2">
+        {quickFilters.map((filter) => (
+          <button
+            key={filter.key}
+            onClick={() => setQuickFilter(filter.key)}
+            className="rounded-xl px-3 py-2 text-xs font-semibold transition"
+            style={{
+              background: quickFilter === filter.key ? "rgba(0,120,212,0.92)" : "rgba(255,255,255,0.34)",
+              color: quickFilter === filter.key ? "white" : theme.subText,
+              border: `1px solid ${quickFilter === filter.key ? "rgba(0,120,212,.95)" : "rgba(255,255,255,.46)"}`,
+              boxShadow: quickFilter === filter.key ? "0 6px 16px rgba(0,120,212,.20)" : "inset 0 1px 0 rgba(255,255,255,.46)",
+            }}
+          >
+            {filter.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="mb-3 space-y-2">
+        {filterGroups.map((group) => {
+          const active = categoryFilter?.key === group.key;
+          return (
+            <button
+              key={group.key}
+              onClick={() => setCategoryFilter(active ? null : { key: group.key, value: group.options[0] })}
+              className="flex w-full items-center justify-between rounded-2xl px-3 py-3 text-xs font-semibold transition backdrop-blur-xl"
+              style={{
+                background: active ? "rgba(0,120,212,0.92)" : "rgba(255,255,255,0.32)",
+                color: active ? "white" : theme.subText,
+                border: `1px solid ${active ? "rgba(0,120,212,.95)" : "rgba(255,255,255,.46)"}`,
+              }}
+            >
+              <span className="truncate">{active ? `${group.label}：${categoryFilter.value}` : group.label}</span>
+              <Icon name="down" size={13} className="shrink-0 opacity-70" />
+            </button>
+          );
+        })}
+      </div>
+
+      {categoryFilter ? (
+        <div className="mb-3 max-h-36 space-y-1.5 overflow-auto pr-1">
+          {filterGroups.find((group) => group.key === categoryFilter.key)?.options.map((option) => (
+            <button
+              key={option}
+              onClick={() => setCategoryFilter({ key: categoryFilter.key, value: option })}
+              className="w-full rounded-xl px-3 py-2 text-left text-xs font-medium transition"
+              style={{
+                background: categoryFilter.value === option ? "rgba(0,120,212,0.90)" : "rgba(255,255,255,0.24)",
+                color: categoryFilter.value === option ? "white" : theme.subText,
+              }}
+            >
+              {option}
+            </button>
+          ))}
+        </div>
+      ) : null}
+
+      <div className="flex rounded-2xl border p-1 backdrop-blur-xl" style={{ background: "rgba(255,255,255,0.30)", borderColor: "rgba(255,255,255,0.46)" }}>
+        <button aria-label="网格视图" onClick={() => setViewMode("grid")} className="flex flex-1 items-center justify-center rounded-xl p-2 transition" style={{ background: showGrid ? "rgba(255,255,255,0.78)" : "transparent", color: showGrid ? theme.blue : theme.subText }}><Icon name="grid" size={16} /></button>
+        <button aria-label="列表视图" onClick={() => setViewMode("list")} className="flex flex-1 items-center justify-center rounded-xl p-2 transition" style={{ background: !showGrid ? "rgba(255,255,255,0.78)" : "transparent", color: !showGrid ? theme.blue : theme.subText }}><Icon name="rows" size={16} /></button>
+      </div>
+    </aside>
+  );
+}
+
+function MobileFilterPanel({ query, setQuery, quickFilter, setQuickFilter, categoryFilter, setCategoryFilter, viewMode, setViewMode }) {
+  const showGrid = viewMode === "grid";
+
+  return (
+    <Panel className="relative mb-6 overflow-hidden p-5 md:p-6 xl:hidden">
+      <label className="mb-5 flex min-w-0 items-center gap-3 rounded-2xl border px-4 py-3.5 backdrop-blur-2xl" style={{ background: "rgba(255,255,255,0.36)", borderColor: "rgba(255,255,255,0.50)", boxShadow: "inset 0 1px 0 rgba(255,255,255,.58), 0 8px 22px rgba(31,38,135,.06)" }}>
+        <Icon name="search" size={19} className="shrink-0" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索素材、模型、场景、标签或 Prompt" className="w-full bg-transparent text-sm outline-none" />
+      </label>
+      <div className="mb-5 flex flex-wrap items-center gap-2">{quickFilters.map((filter) => <FilterPill key={filter.key} active={quickFilter === filter.key} onClick={() => setQuickFilter(filter.key)}>{filter.label}</FilterPill>)}<div className="ml-auto flex rounded-2xl border p-1 backdrop-blur-xl" style={{ background: "rgba(255,255,255,0.30)", borderColor: "rgba(255,255,255,0.44)" }}><button aria-label="网格视图" onClick={() => setViewMode("grid")} className="rounded-xl p-2 transition" style={{ background: showGrid ? "rgba(255,255,255,0.74)" : "transparent", color: showGrid ? theme.blue : theme.subText }}><Icon name="grid" size={16} /></button><button aria-label="列表视图" onClick={() => setViewMode("list")} className="rounded-xl p-2 transition" style={{ background: !showGrid ? "rgba(255,255,255,0.74)" : "transparent", color: !showGrid ? theme.blue : theme.subText }}><Icon name="rows" size={16} /></button></div></div>
+      <div className="grid gap-3 md:grid-cols-3">{filterGroups.map((group) => { const active = categoryFilter?.key === group.key; return <button key={group.key} onClick={() => setCategoryFilter(active ? null : { key: group.key, value: group.options[0] })} className="flex items-center justify-between rounded-2xl px-4 py-3.5 text-sm font-semibold transition backdrop-blur-xl" style={{ background: active ? "rgba(0,120,212,0.92)" : "rgba(255,255,255,0.30)", color: active ? "white" : theme.subText, border: `1px solid ${active ? "rgba(0,120,212,.95)" : "rgba(255,255,255,.44)"}` }}><span>{active ? `${group.label}：${categoryFilter.value}` : group.label}</span><Icon name="down" size={14} /></button>; })}</div>
+      {categoryFilter ? <div className="mt-4 flex flex-wrap gap-2">{filterGroups.find((group) => group.key === categoryFilter.key)?.options.map((option) => <FilterPill key={option} active={categoryFilter.value === option} onClick={() => setCategoryFilter({ key: categoryFilter.key, value: option })}>{option}</FilterPill>)}</div> : null}
+    </Panel>
+  );
+}
+
 function SectionTitle({ activeSection, filteredCount }) {
   const titleMap = { all: "全局素材预览", motion: "动态素材", prompt: "Prompt 词库", favorite: "收藏素材", taxonomy: "分类管理" };
   const subtitleMap = {
@@ -353,8 +464,9 @@ function ThumbnailTileWall() {
   const thumbnailItems = Array.from({ length: thumbCount }, (_, index) => promptLibraryAssets[index % promptLibraryAssets.length]);
 
   function getThumbStyle(index) {
-    const row = Math.floor(index / cols);
-    const col = index % cols;
+    const normalizedIndex = index % thumbCount;
+    const row = Math.floor(normalizedIndex / cols);
+    const col = normalizedIndex % cols;
     const edgeDistanceX = Math.min(col, cols - 1 - col) / (cols / 2);
     const edgeFade = clamp(edgeDistanceX * 1.85, 0.08, 1);
 
@@ -367,8 +479,9 @@ function ThumbnailTileWall() {
       };
     }
 
-    const hoverRow = Math.floor(hoveredThumb / cols);
-    const hoverCol = hoveredThumb % cols;
+    const normalizedHover = hoveredThumb % thumbCount;
+    const hoverRow = Math.floor(normalizedHover / cols);
+    const hoverCol = normalizedHover % cols;
     const dx = col - hoverCol;
     const dy = row - hoverRow;
     const distance = Math.sqrt(dx * dx + dy * dy);
@@ -400,31 +513,36 @@ function ThumbnailTileWall() {
   return (
     <section className="thumbnail-inline-stage relative mb-6 overflow-hidden rounded-[28px] px-5 py-6 md:px-8">
       <div className="thumbnail-wall-shell relative z-10">
-        <div className="grid gap-1.5 md:gap-2" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }} onMouseLeave={() => setHoveredThumb(null)}>
-          {thumbnailItems.map((item, index) => {
-            const isActive = hoveredThumb === index;
-            return (
-              <button
-                key={`${item.id}-thumb-${index}`}
-                type="button"
-                onMouseEnter={() => setHoveredThumb(index)}
-                className={cn("thumbnail-tile relative aspect-[3/4] overflow-hidden outline-none", isActive ? "thumbnail-tile-active" : "")}
-                style={{ ...getThumbStyle(index), borderRadius: "9px", background: "rgba(255,255,255,.28)" }}
-                aria-label={`Prompt 缩略图 ${index + 1}`}
-              >
-                <img src={item.mediaUrl} alt={item.title} className="h-full w-full object-cover" draggable={false} loading="lazy" />
-                <span
-                  className="thumbnail-frost absolute inset-0"
-                  style={{
-                    background: isActive
-                      ? "linear-gradient(to bottom right, rgba(255,255,255,.02), rgba(255,255,255,.01), rgba(0,0,0,.04))"
-                      : "linear-gradient(to bottom right, rgba(255,255,255,.50), rgba(255,255,255,.26), rgba(255,255,255,.10))",
-                  }}
-                />
-                <span className="thumbnail-glint pointer-events-none absolute inset-y-0 -left-[120%] w-[80%] rotate-12 bg-gradient-to-r from-transparent via-white/44 to-transparent" />
-              </button>
-            );
-          })}
+        <div className="thumbnail-scroll-track flex w-[200%]" onMouseLeave={() => setHoveredThumb(null)}>
+          {[0, 1].map((copyIndex) => (
+            <div key={`thumbnail-copy-${copyIndex}`} className="grid flex-[0_0_50%] gap-1.5 md:gap-2 px-1" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}>
+              {thumbnailItems.map((item, index) => {
+                const thumbIndex = copyIndex * thumbCount + index;
+                const isActive = hoveredThumb === thumbIndex;
+                return (
+                  <button
+                    key={`${item.id}-thumb-${copyIndex}-${index}`}
+                    type="button"
+                    onMouseEnter={() => setHoveredThumb(thumbIndex)}
+                    className={cn("thumbnail-tile relative aspect-[3/4] overflow-hidden outline-none", isActive ? "thumbnail-tile-active" : "")}
+                    style={{ ...getThumbStyle(thumbIndex), borderRadius: "9px", background: "rgba(255,255,255,.28)" }}
+                    aria-label={`Prompt 缩略图 ${index + 1}`}
+                  >
+                    <img src={item.mediaUrl} alt={item.title} className="h-full w-full object-cover" draggable={false} loading="lazy" />
+                    <span
+                      className="thumbnail-frost absolute inset-0"
+                      style={{
+                        background: isActive
+                          ? "linear-gradient(to bottom right, rgba(255,255,255,.02), rgba(255,255,255,.01), rgba(0,0,0,.04))"
+                          : "linear-gradient(to bottom right, rgba(255,255,255,.50), rgba(255,255,255,.26), rgba(255,255,255,.10))",
+                      }}
+                    />
+                    <span className="thumbnail-glint pointer-events-none absolute inset-y-0 -left-[120%] w-[80%] rotate-12 bg-gradient-to-r from-transparent via-white/44 to-transparent" />
+                  </button>
+                );
+              })}
+            </div>
+          ))}
         </div>
         <div className="pointer-events-none absolute inset-y-0 left-0 z-[300] w-44 bg-gradient-to-r from-[#eef4f8] via-[#eef4f8]/88 to-transparent" />
         <div className="pointer-events-none absolute inset-y-0 right-0 z-[300] w-44 bg-gradient-to-l from-[#eef4f8] via-[#eef4f8]/88 to-transparent" />
@@ -787,7 +905,18 @@ export default function AIGCAssetLibrary() {
         </nav>
       </aside>
 
-      <main className="relative mx-auto max-w-[1440px] px-6 py-6">
+      <FloatingFilterRail
+        query={query}
+        setQuery={setQuery}
+        quickFilter={quickFilter}
+        setQuickFilter={setQuickFilter}
+        categoryFilter={categoryFilter}
+        setCategoryFilter={setCategoryFilter}
+        viewMode={viewMode}
+        setViewMode={setViewMode}
+      />
+
+      <main className="relative mx-auto max-w-[1440px] px-6 py-6 xl:pr-[270px]">
         <Panel className="mb-6 p-6 md:p-8" style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.64) 0%, rgba(255,255,255,0.36) 100%)" }}>
           <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
             <div><div className="mb-3 inline-flex items-center gap-2 rounded-md border px-3 py-1 text-xs font-medium" style={{ background: theme.soft, borderColor: theme.border, color: theme.subText }}><span className="h-1.5 w-1.5 rounded-full" style={{ background: "#107c10" }} />可部署框架版 · 无外部图片依赖</div><h1 className="max-w-3xl text-4xl font-semibold tracking-tight md:text-6xl">AIGC 素材资产库</h1><p className="mt-4 max-w-2xl text-base leading-7 md:text-lg" style={{ color: theme.subText }}>统一管理历史图片、GIF、视频片段与 Prompt。先跑通框架，后续直接替换真实素材与提示词。</p></div>
@@ -796,26 +925,27 @@ export default function AIGCAssetLibrary() {
         </Panel>
 
         {activeSection === "all" ? <ThumbnailTileWall /> : null}
+        <MobileFilterPanel
+          query={query}
+          setQuery={setQuery}
+          quickFilter={quickFilter}
+          setQuickFilter={setQuickFilter}
+          categoryFilter={categoryFilter}
+          setCategoryFilter={setCategoryFilter}
+          viewMode={viewMode}
+          setViewMode={setViewMode}
+        />
 
-        <Panel className="relative mb-6 overflow-hidden p-5 md:p-6">
-          <label className="mb-5 flex min-w-0 items-center gap-3 rounded-2xl border px-4 py-3.5 backdrop-blur-2xl" style={{ background: "rgba(255,255,255,0.36)", borderColor: "rgba(255,255,255,0.50)", boxShadow: "inset 0 1px 0 rgba(255,255,255,.58), 0 8px 22px rgba(31,38,135,.06)" }}>
-            <Icon name="search" size={19} className="shrink-0" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索素材、模型、场景、标签或 Prompt" className="w-full bg-transparent text-sm outline-none" />
-          </label>
-          <div className="mb-5 flex flex-wrap items-center gap-2">{quickFilters.map((filter) => <FilterPill key={filter.key} active={quickFilter === filter.key} onClick={() => setQuickFilter(filter.key)}>{filter.label}</FilterPill>)}<div className="ml-auto flex rounded-2xl border p-1 backdrop-blur-xl" style={{ background: "rgba(255,255,255,0.30)", borderColor: "rgba(255,255,255,0.44)" }}><button aria-label="网格视图" onClick={() => setViewMode("grid")} className="rounded-xl p-2 transition" style={{ background: showGrid ? "rgba(255,255,255,0.74)" : "transparent", color: showGrid ? theme.blue : theme.subText }}><Icon name="grid" size={16} /></button><button aria-label="列表视图" onClick={() => setViewMode("list")} className="rounded-xl p-2 transition" style={{ background: !showGrid ? "rgba(255,255,255,0.74)" : "transparent", color: !showGrid ? theme.blue : theme.subText }}><Icon name="rows" size={16} /></button></div></div>
-          <div className="grid gap-3 md:grid-cols-3">{filterGroups.map((group) => { const active = categoryFilter?.key === group.key; return <button key={group.key} onClick={() => setCategoryFilter(active ? null : { key: group.key, value: group.options[0] })} className="flex items-center justify-between rounded-2xl px-4 py-3.5 text-sm font-semibold transition backdrop-blur-xl" style={{ background: active ? "rgba(0,120,212,0.92)" : "rgba(255,255,255,0.30)", color: active ? "white" : theme.subText, border: `1px solid ${active ? "rgba(0,120,212,.95)" : "rgba(255,255,255,.44)"}` }}><span>{active ? `${group.label}：${categoryFilter.value}` : group.label}</span><Icon name="down" size={14} /></button>; })}</div>
-          {categoryFilter ? <div className="mt-4 flex flex-wrap gap-2">{filterGroups.find((group) => group.key === categoryFilter.key)?.options.map((option) => <FilterPill key={option} active={categoryFilter.value === option} onClick={() => setCategoryFilter({ key: categoryFilter.key, value: option })}>{option}</FilterPill>)}</div> : null}
-        </Panel>
-
-        <SectionTitle activeSection={activeSection} filteredCount={filteredAssets.length} />
+        {activeSection !== "all" ? <SectionTitle activeSection={activeSection} filteredCount={filteredAssets.length} /> : null}
         {activeSection === "prompt" ? <PromptLibraryView assets={filteredAssets} viewMode={viewMode} onToggleFavorite={handleToggleFavorite} /> : activeSection === "taxonomy" ? <TaxonomyView /> : filteredAssets.length === 0 ? <EmptyState /> : showGrid ? activeSection === "all" ? <GlobalPreviewGridView assets={filteredAssets} onToggleFavorite={handleToggleFavorite} /> : activeSection === "motion" ? <MotionGridView assets={filteredAssets} onToggleFavorite={handleToggleFavorite} /> : <AssetGridView assets={filteredAssets} onToggleFavorite={handleToggleFavorite} /> : <AssetListView assets={filteredAssets} onToggleFavorite={handleToggleFavorite} />}
       </main>
 
       <style>{`
         input::placeholder { color: rgba(96,94,92,.58); }
         .animated-page-bg { background: linear-gradient(180deg, #eef8ff 0%, #e4eef9 44%, #f5f7fb 100%); position: relative; overflow-x: hidden; }
-        .animated-page-bg::before { content: ""; position: fixed; inset: -38%; pointer-events: none; background: radial-gradient(circle at 16% 18%, rgba(0,120,212,.28), transparent 24%), radial-gradient(circle at 78% 14%, rgba(124,94,255,.24), transparent 26%), radial-gradient(circle at 50% 82%, rgba(0,188,242,.22), transparent 30%), radial-gradient(circle at 34% 46%, rgba(255,255,255,.72), transparent 24%); filter: blur(10px); opacity: 1; animation: backgroundBreath 8s ease-in-out infinite; will-change: transform, opacity; }
-        .animated-page-bg::after { content: ""; position: fixed; inset: -20%; pointer-events: none; background: linear-gradient(115deg, transparent 0%, rgba(255,255,255,.28) 34%, rgba(157,210,255,.18) 46%, transparent 62%), radial-gradient(circle at 70% 30%, rgba(255,255,255,.40), transparent 22%); mix-blend-mode: screen; opacity: .72; animation: backgroundSweep 7s ease-in-out infinite; will-change: transform, opacity; }
-        .ambient-wash { background: radial-gradient(circle at 16% 12%, rgba(0,120,212,.34), transparent 25%), radial-gradient(circle at 88% 8%, rgba(132,118,255,.30), transparent 27%), radial-gradient(circle at 42% 70%, rgba(0,188,242,.24), transparent 28%), linear-gradient(120deg, rgba(255,255,255,.32), transparent 48%, rgba(255,255,255,.34)); opacity: 1; animation: ambientWashMove 8.5s ease-in-out infinite; will-change: transform, opacity; }
+        .animated-page-bg::before { content: ""; position: fixed; inset: -38%; pointer-events: none; background: radial-gradient(circle at 16% 18%, rgba(0,120,212,.28), transparent 24%), radial-gradient(circle at 78% 14%, rgba(124,94,255,.24), transparent 26%), radial-gradient(circle at 50% 82%, rgba(0,188,242,.22), transparent 30%), radial-gradient(circle at 34% 46%, rgba(255,255,255,.72), transparent 24%); filter: blur(10px); opacity: 1; animation: backgroundBreath 4.8s ease-in-out infinite; will-change: transform, opacity; }
+        .animated-page-bg::after { content: ""; position: fixed; inset: -20%; pointer-events: none; background: linear-gradient(115deg, transparent 0%, rgba(255,255,255,.28) 34%, rgba(157,210,255,.18) 46%, transparent 62%), radial-gradient(circle at 70% 30%, rgba(255,255,255,.40), transparent 22%); mix-blend-mode: screen; opacity: .72; animation: backgroundSweep 4.2s ease-in-out infinite; will-change: transform, opacity; }
+        .ambient-wash { background: radial-gradient(circle at 16% 12%, rgba(0,120,212,.34), transparent 25%), radial-gradient(circle at 88% 8%, rgba(132,118,255,.30), transparent 27%), radial-gradient(circle at 42% 70%, rgba(0,188,242,.24), transparent 28%), linear-gradient(120deg, rgba(255,255,255,.32), transparent 48%, rgba(255,255,255,.34)); opacity: 1; animation: ambientWashMove 4.6s ease-in-out infinite; will-change: transform, opacity; }
         @keyframes backgroundBreath { 0%, 100% { transform: translate3d(-1%,0,0) scale(1); opacity: .82; } 50% { transform: translate3d(4%,-2.5%,0) scale(1.12); opacity: 1; } }
         @keyframes backgroundSweep { 0%, 100% { transform: translate3d(-8%,-2%,0) rotate(0deg); opacity: .42; } 50% { transform: translate3d(8%,2%,0) rotate(4deg); opacity: .9; } }
         @keyframes ambientWashMove { 0%, 100% { transform: translate3d(-3%,-2%,0) scale(1); opacity: .86; } 50% { transform: translate3d(3%,2.5%,0) scale(1.1); opacity: 1; } }
@@ -823,11 +953,11 @@ export default function AIGCAssetLibrary() {
         @keyframes ambientDriftB { 0%, 100% { transform: translate3d(34px,-10px,0) scale(1.02); } 50% { transform: translate3d(-96px,68px,0) scale(1.18); } }
         @keyframes ambientSheen { 0%, 100% { opacity: .62; transform: translateX(-8%) translateY(-2%) scale(1); } 50% { opacity: 1; transform: translateX(8%) translateY(2%) scale(1.04); } }
         .ambient-orb { mix-blend-mode: screen; opacity: .95; }
-        .ambient-orb-a { animation: ambientDriftA 8.5s ease-in-out infinite; }
-        .ambient-orb-b { animation: ambientDriftB 9.5s ease-in-out infinite; }
-        .ambient-orb-c { animation: ambientDriftA 10s ease-in-out infinite reverse; }
-        .ambient-orb-d { animation: ambientDriftB 8s ease-in-out infinite reverse; }
-        .ambient-sheen { background: radial-gradient(circle at 20% 18%, rgba(255,255,255,.72), transparent 28%), radial-gradient(circle at 82% 16%, rgba(255,255,255,.58), transparent 24%), linear-gradient(115deg, transparent 0%, rgba(255,255,255,.48) 42%, transparent 68%); animation: ambientSheen 6.5s ease-in-out infinite; }
+        .ambient-orb-a { animation: ambientDriftA 4.8s ease-in-out infinite; }
+        .ambient-orb-b { animation: ambientDriftB 5.2s ease-in-out infinite; }
+        .ambient-orb-c { animation: ambientDriftA 5.6s ease-in-out infinite reverse; }
+        .ambient-orb-d { animation: ambientDriftB 4.4s ease-in-out infinite reverse; }
+        .ambient-sheen { background: radial-gradient(circle at 20% 18%, rgba(255,255,255,.72), transparent 28%), radial-gradient(circle at 82% 16%, rgba(255,255,255,.58), transparent 24%), linear-gradient(115deg, transparent 0%, rgba(255,255,255,.48) 42%, transparent 68%); animation: ambientSheen 3.8s ease-in-out infinite; }
         @keyframes floatAsset { 0%, 100% { transform: translate3d(0,0,0) scale(1); } 50% { transform: translate3d(12px,-16px,0) scale(1.08); } }
         @keyframes pulseLine { 0%, 100% { opacity: .35; transform: scaleX(.82); } 50% { opacity: .9; transform: scaleX(1); } }
         @keyframes marqueeLeft { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
@@ -847,8 +977,11 @@ export default function AIGCAssetLibrary() {
         .thumbnail-glint { opacity: 0; }
         .thumbnail-tile-active .thumbnail-glint { animation: thumbnailGlint 680ms cubic-bezier(.22,1,.36,1) both; }
         @keyframes thumbnailGlint { 0% { transform: translateX(0) rotate(12deg); opacity: 0; } 18% { opacity: .75; } 100% { transform: translateX(330%) rotate(12deg); opacity: 0; } }
+        @keyframes thumbnailWallScroll { 0% { transform: translate3d(0,0,0); } 100% { transform: translate3d(-50%,0,0); } }
+        .thumbnail-scroll-track { animation: thumbnailWallScroll 130s linear infinite; will-change: transform; }
+        .thumbnail-wall-shell:hover .thumbnail-scroll-track { animation-play-state: paused; }
         .prompt-hover-panel:hover { transform: translateY(0) scale(1.015); }
-        @media (prefers-reduced-motion: reduce) { .ambient-orb, .ambient-wash, .ambient-sheen, .animated-page-bg::before, .animated-page-bg::after, .motion-orb, .motion-block, .motion-line, .marquee-track { animation: none !important; } }
+        @media (prefers-reduced-motion: reduce) { .ambient-orb, .ambient-wash, .ambient-sheen, .animated-page-bg::before, .animated-page-bg::after, .motion-orb, .motion-block, .motion-line, .marquee-track, .thumbnail-scroll-track { animation: none !important; } }
       `}</style>
     </div>
   );
