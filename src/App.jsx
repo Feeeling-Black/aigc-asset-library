@@ -43,8 +43,7 @@ const promptLibrarySeed = String.raw`
 26Q2 功能类 39	nano pro	功能类	26Q2	⽣成⾼科技隔热织物的特写宏观横截展示（两层），⾯料呈弧形层状结构。表⾯呈现淡蓝⾊并具有清晰的织物纹理⼀束带彩虹折射效果的光束击中材料表层，全部被反射并产⽣光线偏折。材料下⽅散发轻柔冷雾，突出其凉感与散热效果。背景为⼲净的蓝⾊渐变，整体呈现现代科技产品⼴告视觉。整体⻛格：未来感材料科技展示、纹理写实、结构清晰、突出产品功能特性。光束必须保留彩虹折射效果，避免变成单⾊激光六边形纹理要保持“织物/涂层”质感，⽽不是⾦属⽹冷雾不能过浓，应为轻微科技雾⽓
 26Q2 功能类 40	nano pro	功能类	26Q2	主体(Subject):图像中⼼是⼀个由⽔构成的漩涡（Vortex），并且有⼤量⻜溅的⽔花和⽔滴。在⽔漩涡的中空，⼀条⽩⾊的⾯料带正呈螺旋状扭动，看起来像是被强劲的⽔流冲刷清洗。（⾯料整体褶皱没有那么多）环境(Environment):漩涡悬浮在⼀个平静的⽔⾯上⽅，背景是浅蓝⾊的渐变⾊，营造出⼲净清爽的氛围⻛格(Style):图像⾮常清晰、真实，不像是⼿绘，更偏向于“3D渲染”（3DRender）或“⾼速摄影”（High-speedphotography）。细节(Details):⽔是“清澈透明的”（Clear,Transparent），可以看到很多“⽓泡”（Bubbles）和“⻜溅物”（Splashes），⾯料的纹理感和肌理感@
 26Q2 功能类 41	nano pro	功能类	26Q2	主体(Subject):图像中⼼是⼀个⽔涡流在平静的海⾯上旋转和⻜溅，并且有⼤量⻜溅的⽔花和⽔滴。在⽔涡流中⼼，⼀条⽩⾊的⾯料带正呈螺旋状扭动，看起来像是被强劲的⽔流冲刷清洗。（⾯料整体褶皱没有那么多）环境(Environment):背景是浅蓝⾊的渐变⾊，左上⻆是太阳光斑，营造出整体防晒整洁的氛围⻛格(Style):图像⾮常清晰、真实，不像是⼿绘，更偏向于“3D渲染”（3DRender）或“⾼速摄影”细节(Details):⽔是“清澈透明的”（Clear,Transparent），可以看到很多“⽓泡”（Bubbles）和“⻜溅物”（Splashes），太阳光斑
-`.trim().split("
-").map((line) => line.split("	"));
+`.trim().split(/\r?\n/).map((line) => line.split("\t"));
 
 const prompts = promptLibrarySeed.map(([title, model, category, rawQuarter, prompt], index) => {
   const imageNumber = String(index + 1).padStart(3, "0");
