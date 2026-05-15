@@ -102,6 +102,27 @@ const spring = {
   mass: 0.9,
 };
 
+function cn(...classes) {
+  return classes.filter(Boolean).join(" ");
+}
+
+function clamp(value, min = 0, max = 1) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function getPromptPanelState(pointerRatioY) {
+  if (pointerRatioY < 0.18 || pointerRatioY > 0.98) {
+    return { visible: false, depth: 0, interactive: false };
+  }
+
+  const depth = clamp((pointerRatioY - 0.42) / 0.32);
+  return {
+    visible: true,
+    depth,
+    interactive: depth > 0.52,
+  };
+}
+
 function SearchIcon() {
   return (
     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
@@ -115,6 +136,14 @@ function CheckIcon() {
   return (
     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M20 6 9 17l-5-5" />
+    </svg>
+  );
+}
+
+function StarIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 3.5 14.7 9l6 .9-4.3 4.2 1 5.9-5.4-2.8L6.6 20l1-5.9L3.3 9.9l6-.9L12 3.5Z" />
     </svg>
   );
 }
@@ -137,6 +166,139 @@ function VisualCard({ image, title }) {
       />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_10%,rgba(255,255,255,0.16),transparent_42%)]" />
     </motion.div>
+  );
+}
+
+function PromptAssetCard({ item, index, totalCount, hoveredPromptId, onHoverPrompt, onLeavePrompt, onCopyPrompt }) {
+  const [panelState, setPanelState] = useState({ visible: false, depth: 0, interactive: false });
+  const [localCopied, setLocalCopied] = useState(false);
+  const { visible, depth, interactive } = panelState;
+  const isDimmed = Boolean(hoveredPromptId && hoveredPromptId !== item.id);
+  const serialNumber = String(index + 1).padStart(2, "0");
+  const totalNumber = String(totalCount).padStart(2, "0");
+
+  function handlePointerMove(event) {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const ratioY = clamp((event.clientY - rect.top) / rect.height, 0, 1);
+    setPanelState(getPromptPanelState(ratioY));
+  }
+
+  async function handleCopyPrompt(event) {
+    event.stopPropagation();
+    await onCopyPrompt(item);
+    setLocalCopied(true);
+    window.setTimeout(() => setLocalCopied(false), 1200);
+  }
+
+  return (
+    <article
+      onMouseEnter={() => onHoverPrompt(item.id)}
+      onMouseLeave={() => {
+        onLeavePrompt();
+        setPanelState({ visible: false, depth: 0, interactive: false });
+        setLocalCopied(false);
+      }}
+      className="group cursor-pointer overflow-hidden rounded-[30px] border border-white/20 bg-white/40 shadow-[0_24px_70px_rgba(0,0,0,0.12)] transition duration-500 hover:-translate-y-1 hover:shadow-[0_38px_110px_rgba(0,0,0,0.18)]"
+      style={{
+        opacity: isDimmed ? 0.44 : 1,
+        filter: isDimmed ? "brightness(.55) saturate(.62)" : "brightness(1) saturate(1)",
+        transform: isDimmed ? "scale(.985)" : undefined,
+      }}
+    >
+      <div
+        className="relative aspect-[3/4] overflow-hidden rounded-[30px] bg-gray-100"
+        onPointerMove={handlePointerMove}
+        onPointerLeave={() => {
+          setPanelState({ visible: false, depth: 0, interactive: false });
+          setLocalCopied(false);
+        }}
+      >
+        <VisualCard image={item.image} title={item.title} />
+
+        <div
+          className="pointer-events-none absolute left-4 top-4 z-30 rounded-full bg-black/24 px-3 py-1.5 text-[10px] font-semibold tracking-[0.14em] text-white/78 backdrop-blur-xl"
+          style={{ textShadow: "0 1px 4px rgba(0,0,0,.22)" }}
+        >
+          {serialNumber}/{totalNumber}
+        </div>
+
+        <div className="absolute inset-x-0 top-0 z-30 flex items-center justify-end p-4">
+          <button
+            type="button"
+            aria-label="收藏素材"
+            onClick={(event) => event.stopPropagation()}
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/40 bg-white/88 text-black/56 shadow-[0_8px_24px_rgba(0,0,0,0.12)] backdrop-blur-xl transition hover:scale-105 hover:bg-white"
+          >
+            <StarIcon />
+          </button>
+        </div>
+
+        <div
+          className="pointer-events-none absolute bottom-4 left-4 right-4 z-10 flex flex-wrap gap-2 transition-opacity duration-300"
+          style={{ opacity: visible ? 0 : 1 }}
+        >
+          <span className="rounded-md bg-black/62 px-3 py-1 text-xs font-medium text-white backdrop-blur-xl">
+            {item.model}
+          </span>
+        </div>
+
+        <div
+          className="pointer-events-none absolute inset-0 z-20 transition-opacity duration-300"
+          style={{
+            opacity: visible ? 0.1 + depth * 0.25 : 0,
+            background: "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.12) 45%, rgba(0,0,0,.54) 100%)",
+          }}
+        />
+
+        <div
+          className={cn(
+            "absolute left-4 right-4 z-40 overflow-hidden rounded-2xl border text-white backdrop-blur-2xl transition-all duration-300",
+            visible ? "opacity-100" : "pointer-events-none opacity-0"
+          )}
+          style={{
+            top: `${58 - depth * 28}%`,
+            bottom: `${4 + depth * 0.8}%`,
+            padding: `${16 + depth * 6}px 22px`,
+            backgroundColor: `rgba(18,18,22,${0.42 + depth * 0.36})`,
+            borderColor: `rgba(255,255,255,${0.38 - depth * 0.18})`,
+            boxShadow: `0 ${18 + depth * 14}px ${52 + depth * 24}px rgba(0,0,0,${0.18 + depth * 0.24})`,
+            transform: visible ? "translateY(0) scale(1)" : "translateY(14px) scale(.985)",
+          }}
+        >
+          <div className="mb-3 flex items-center justify-between gap-3 text-xs text-white/74">
+            <div className="flex min-w-0 items-center gap-2">
+              <span>图片</span>
+              <span>·</span>
+              <span className="truncate">{item.model}</span>
+              <span>·</span>
+              <span>{item.category}</span>
+            </div>
+            <span className="shrink-0 rounded-full bg-white/12 px-2 py-0.5 text-[10px] text-white/80">
+              {localCopied ? "已复制" : "点击复制"}
+            </span>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleCopyPrompt}
+            title="点击复制 Prompt"
+            className="block w-full cursor-copy text-left outline-none"
+          >
+            <p className={cn("text-sm font-medium leading-7 text-white transition-all duration-300", interactive ? "line-clamp-5" : "line-clamp-3")}>
+              {item.prompt}
+            </p>
+          </button>
+
+          <div
+            className="pointer-events-none mt-3 flex items-center gap-2 text-xs text-white/70 transition-all duration-300"
+            style={{ opacity: visible ? Math.max(0.45, clamp((depth - 0.3) / 0.32)) : 0 }}
+          >
+            <span className="inline-block h-3 w-3 rounded-[3px] border border-white/28" />
+            点击文字复制 Prompt
+          </div>
+        </div>
+      </div>
+    </article>
   );
 }
 
@@ -245,7 +407,7 @@ export default function PreviewPromptGallery() {
             ))}
           </nav>
           <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} className="rounded-full bg-black px-4 py-1.5 text-xs font-medium text-white">
-            复制使用
+            Copy
           </motion.button>
         </motion.div>
       </header>
@@ -265,30 +427,39 @@ export default function PreviewPromptGallery() {
       </AnimatePresence>
 
       <main className="relative z-10">
-        <motion.section style={{ y: heroY, opacity: heroOpacity }} className="mx-auto max-w-5xl px-6 pb-12 pt-24 text-center">
-          <motion.p
+        <motion.section
+          style={{ y: heroY, opacity: heroOpacity }}
+          className="mx-auto max-w-6xl px-6 pb-16 pt-28 text-center md:pb-20 md:pt-32"
+        >
+          <motion.div
             initial={{ y: 18, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.08, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className="mb-4 text-sm font-semibold text-blue-600"
+            transition={{ delay: 0.06, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            className="mx-auto mb-6 inline-flex items-center rounded-full border border-black/8 bg-white/48 px-4 py-2 text-sm font-medium text-black/58 shadow-[0_8px_28px_rgba(0,0,0,0.04)] backdrop-blur-2xl"
           >
-            For team creative workflow
-          </motion.p>
+            AIGC Prompt Gallery
+          </motion.div>
+
           <motion.h1
             initial={{ y: 24, opacity: 0, filter: "blur(8px)" }}
             animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
-            transition={{ delay: 0.16, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-            className="mx-auto max-w-4xl text-6xl font-semibold tracking-[-0.065em] text-[#1d1d1f] md:text-8xl"
+            transition={{ delay: 0.14, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+            className="mx-auto max-w-5xl text-[4.4rem] font-semibold leading-[0.94] tracking-[-0.075em] text-[#1d1d1f] md:text-[7.2rem] lg:text-[8.4rem]"
           >
-            41 Prompt visuals, ready to copy.
+            <span className="block">Ideas.</span>
+            <span className="block">Visuals.</span>
+            <span className="block bg-gradient-to-r from-[#1d1d1f] via-[#3b3f46] to-[#8a8f98] bg-clip-text text-transparent">
+              Ready to copy.
+            </span>
           </motion.h1>
+
           <motion.p
             initial={{ y: 18, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.28, duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
-            className="mx-auto mt-7 max-w-2xl text-xl leading-8 text-black/58"
+            className="mx-auto mt-8 max-w-3xl text-[1.35rem] font-medium leading-9 tracking-[-0.02em] text-black/58 md:text-[1.55rem]"
           >
-            从原项目的 41 张 Prompt 图片与对应提示词中整理而来。悬停查看 Prompt，点击图片即可复制。
+            将 AI 视觉案例与对应 Prompt 整理成一个清晰、轻量、可复用的团队灵感库。
           </motion.p>
         </motion.section>
 
@@ -345,7 +516,7 @@ export default function PreviewPromptGallery() {
                 <input
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
-                  placeholder="搜索 Prompt"
+                  placeholder="Search Prompts"
                   className="h-11 w-full rounded-full border border-white/70 bg-[#f1f2f4]/85 pl-11 pr-5 text-sm text-black/78 outline-none backdrop-blur-xl placeholder:text-black/35 transition focus:bg-white/80 focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)]"
                 />
               </motion.label>
@@ -356,45 +527,24 @@ export default function PreviewPromptGallery() {
         <motion.section layout className="mx-auto grid max-w-7xl grid-cols-1 gap-x-6 gap-y-14 px-5 pb-28 sm:grid-cols-2 lg:grid-cols-3 xl:gap-y-16">
           <AnimatePresence mode="popLayout">
             {filteredPrompts.map((item, index) => (
-              <motion.button
+              <motion.div
                 layout
                 key={item.id}
-                type="button"
-                aria-label={`复制 Prompt：${item.title}`}
-                onClick={() => handleCopy(item)}
-                onMouseEnter={() => setHoveredPrompt(item.id)}
-                onMouseLeave={() => setHoveredPrompt(null)}
-                onFocus={() => setHoveredPrompt(item.id)}
-                onBlur={() => setHoveredPrompt(null)}
                 initial={{ opacity: 0, y: 28, scale: 0.98 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 18, scale: 0.98 }}
-                whileHover={{ y: -8 }}
-                whileTap={{ scale: 0.985 }}
                 transition={{ type: "spring", stiffness: 620, damping: 38, mass: 0.55 }}
-                className="group relative block overflow-hidden rounded-[38px] text-left shadow-[0_24px_70px_rgba(0,0,0,0.12)] outline-none ring-0 transition-shadow duration-300 hover:shadow-[0_38px_110px_rgba(0,0,0,0.18)] focus-visible:ring-4 focus-visible:ring-blue-300/50"
               >
-                <div className="relative aspect-[3/4] overflow-hidden rounded-[38px]">
-                  <motion.div className="absolute inset-0" transition={spring} whileHover={{ scale: 1.045 }}>
-                    <VisualCard image={item.image} title={item.title} />
-                  </motion.div>
-                  <motion.div
-                    initial={false}
-                    animate={{ opacity: hoveredPrompt && hoveredPrompt !== item.id ? 0.68 : 0 }}
-                    transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
-                    className="absolute inset-0 bg-black"
-                  />
-                  <motion.div className={`absolute inset-0 bg-[radial-gradient(circle_at_50%_12%,rgba(255,255,255,0.2),transparent_42%)] transition-opacity duration-500 ${hoveredPrompt === item.id ? "opacity-100" : "opacity-0"}`} />
-                  <div className={`absolute left-5 top-5 z-10 rounded-full border border-white/30 bg-white/18 px-3.5 py-1.5 text-xs font-medium text-white shadow-[0_8px_24px_rgba(0,0,0,0.12)] backdrop-blur-xl transition duration-500 ${hoveredPrompt === item.id ? "bg-white/24" : ""}`}>
-                    {item.model}
-                  </div>
-                  <div className={`absolute inset-x-5 bottom-5 transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${hoveredPrompt === item.id ? "translate-y-0 opacity-100" : "translate-y-5 opacity-0"}`}>
-                    <div className="rounded-3xl border border-white/12 bg-black/58 p-4 text-white shadow-[0_18px_48px_rgba(0,0,0,0.28)] backdrop-blur-[24px] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-white/16 hover:bg-black/72 hover:shadow-[0_22px_56px_rgba(0,0,0,0.34)]">
-                      <p className="line-clamp-6 text-sm leading-7 text-white">{item.prompt}</p>
-                    </div>
-                  </div>
-                </div>
-              </motion.button>
+                <PromptAssetCard
+                  item={item}
+                  index={index}
+                  totalCount={filteredPrompts.length}
+                  hoveredPromptId={hoveredPrompt}
+                  onHoverPrompt={setHoveredPrompt}
+                  onLeavePrompt={() => setHoveredPrompt(null)}
+                  onCopyPrompt={handleCopy}
+                />
+              </motion.div>
             ))}
           </AnimatePresence>
         </motion.section>
