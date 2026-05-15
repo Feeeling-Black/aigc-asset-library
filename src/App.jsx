@@ -429,7 +429,7 @@ export default function PreviewPromptGallery() {
       <main className="relative z-10">
         <motion.section
           style={{ y: heroY, opacity: heroOpacity }}
-          className="mx-auto max-w-6xl px-6 pb-16 pt-28 text-center md:pb-20 md:pt-32"
+          className="mx-auto max-w-6xl px-6 pb-24 pt-16 text-center md:pb-28 md:pt-20"
         >
           <motion.div
             initial={{ y: 18, opacity: 0 }}
