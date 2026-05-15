@@ -1,89 +1,66 @@
 import React, { useMemo, useState } from "react";
 import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
 
-const prompts = [
-  {
-    title: "三防面料流体表现",
-    model: "Seedream 3.0",
-    category: "功能类",
-    quarter: "Q3",
-    scene: "适合功能面料、电商详情页、科技卖点图",
-    prompt: "正视图视角，灰色的面料，倾斜45度，水、油、可乐，三种不同流体从上到下流动在面料表面，体现三防科技。",
-    color: "from-sky-100 via-white to-blue-200",
-  },
-  {
-    title: "抑菌科技微距可视化",
-    model: "Seedream 3.0",
-    category: "功能类",
-    quarter: "Q3",
-    scene: "适合面料科技、健康功能、抑菌概念表达",
-    prompt: "C4D白色极其纤细编织面料肌理，景深透视，有两个不规则的圆形细菌，浅绿色玻璃材质，表现抑菌科技。",
-    color: "from-emerald-100 via-white to-cyan-200",
-  },
-  {
-    title: "冰封凉感外套",
-    model: "nano pro",
-    category: "模型类",
-    quarter: "Q2",
-    scene: "适合夏季凉感、防晒衣、户外新品主视觉",
-    prompt: "一件轻薄的凉感连帽外套被封存在巨大的透明冰块中，整体氛围极致降温、冰封般的冷感科技广告视觉。",
-    color: "from-blue-100 via-white to-indigo-200",
-  },
-  {
-    title: "冰晶纤维材质",
-    model: "nano pro",
-    category: "功能类",
-    quarter: "Q2",
-    scene: "适合凉感科技、纤维结构、详情页局部放大",
-    prompt: "超微距特写镜头，柔软的白色编织纤维相互交织，中心是冰蓝色半透明凝胶材质，高端商业CG风格。",
-    color: "from-cyan-50 via-slate-100 to-blue-200",
-  },
-  {
-    title: "商业海报主视觉",
-    model: "Midjourney",
-    category: "场景类",
-    quarter: "Q1",
-    scene: "适合品牌 Campaign、KV、活动主视觉参考",
-    prompt: "高级商业广告构图，极简背景，产品居中，柔和自然光，高级材质细节，干净留白，适合品牌级视觉海报。",
-    color: "from-stone-100 via-white to-zinc-200",
-  },
-  {
-    title: "动态分镜氛围参考",
-    model: "Runway / Kling",
-    category: "场景类",
-    quarter: "Q4",
-    scene: "适合视频脚本、镜头语言、动态广告分镜",
-    prompt: "慢镜头推进，产品在冷色调环境中被柔和光线扫过，背景有轻微粒子漂浮，整体氛围高级、安静、克制。",
-    color: "from-slate-200 via-white to-blue-100",
-  },
-  {
-    title: "户外机能场景",
-    model: "Seedream 3.0",
-    category: "场景类",
-    quarter: "Q1",
-    scene: "适合户外服饰、山系视觉、场景氛围图",
-    prompt: "清晨山谷中的户外机能服装场景，远处薄雾和柔和阳光，人物站在岩石边缘，整体画面干净、高级、自然，商业广告摄影质感。",
-    color: "from-lime-100 via-white to-sky-100",
-  },
-  {
-    title: "面料科技切面",
-    model: "nano pro",
-    category: "功能类",
-    quarter: "Q2",
-    scene: "适合功能结构、材质剖面、科技说明图",
-    prompt: "高端商业CG风格，面料纤维的微观切面结构，半透明蓝色能量层夹在纤维之间，表现轻薄、透气、凉感与科技功能。",
-    color: "from-blue-50 via-white to-cyan-200",
-  },
-  {
-    title: "产品静物光影",
-    model: "Midjourney",
-    category: "模型类",
-    quarter: "Q3",
-    scene: "适合产品主图、静物摄影、品牌视觉",
-    prompt: "极简产品静物摄影，产品放置在浅色磨砂平台上，柔和侧逆光，背景有微弱渐变和干净留白，整体高级、克制、适合商业主视觉。",
-    color: "from-zinc-100 via-white to-stone-200",
-  },
-];
+const promptLibrarySeed = String.raw`
+25Q3 模型类 01	Seedream 3.0	模型类	25Q3	男⼠灰⾊休闲裤，版型宽松，全⻓的轮廓，采⽤柔软的纯棉⾯料，⼀只腿呈现夸张弯曲的姿势。单品独⽴拍摄，纯⽩⾊背景，专业的影棚灯光，⾯料纹理清晰，⽆模特，画⾯中⽆⼈出现
+25Q3 模型类 02	Seedream 3.0	模型类	25Q3	⼥防晒外套，在空中飘动，形态⾃然平整，展现整个⾐服版型，⽆明显褶皱，背景蓝天⼾外，⾯料纹理清晰，⽆模特，画⾯中⽆⼈出现，
+25Q3 模型类 03	Seedream 3.0	模型类	25Q3	男⼠休闲⽜仔裤，版型宽松，全⻓的轮廓，采⽤柔软的⽜仔⾯料，⼀只腿呈弯曲的姿势。单品独⽴拍摄，纯⽩⾊背景，专业的影棚灯光，⾯料纹理清晰，⽆模特，画⾯中⽆⼈出现
+25Q3 模型类 04	Seedream 3.0	模型类	25Q3	男⼠冲锋⾐外套，采⽤三防的特氟⻰⾯料，在空中飘动，背景是灰⽩⾊渐变，专业的影棚灯光，⾯料纹理清晰，⽆模特，画⾯中⽆⼈出现
+25Q3 模型类 05	Seedream 3.0	模型类	25Q3	男⼠休闲⽜仔裤，版型宽松，全⻓的轮廓，采⽤柔软的⽜仔⾯料，⼀只腿呈弯曲的姿势。单品独⽴拍摄，背景是⼾外雪⼭的场景，裤⼦上覆盖了⼀层冰霜，⽆模特，画⾯中⽆⼈出现
+25Q3 模型类 06	Seedream 3.0	模型类	25Q3	男⼠冲锋⾐外套，采⽤三防的特氟⻰⾯料，在空中飘动，⾯料平整⽆褶皱，背景⼾外的森林场景，⾯料纹理清晰，⽆模特，画⾯中⽆⼈出现
+25Q3 模型类 07	Seedream 3.0	模型类	25Q3	四件⼥⼠短袖T恤从左到右依次悬挂，颜⾊分别是粉⾊、⽩⾊、⻩⾊、卡其⾊。版型很⼩巧，⽆褶皱，圆领设计。⾐物通过⽊夹悬挂在细绳上，展现出轻盈的垂坠感，突显其轻薄的⾯料特性。单品独⽴拍摄，背景是⼾外的蓝天。⽆模特穿着，正视视⻆
+25Q3 模型类 08	Seedream 3.0	模型类	25Q3	四件⼥⼠短袖T恤从左到右依次悬挂，颜⾊分别是粉⾊、⽩⾊、⻩⾊、卡其⾊。版型⼩巧⽆褶皱，圆领设计。⾐物通过⽊夹悬挂在细绳上，展现出轻盈的垂坠感，突显其轻薄的⾯料特性。单品独⽴拍摄，背景为纯净的⽩⾊，专业摄影棚灯光下，纯⾊的背景，⾯料的细腻质感得到清晰展现。⽆模特穿着，正视视⻆
+25Q3 功能类 09	Seedream 3.0	功能类	25Q3	正视图视角，灰色的面料，倾斜45度，水、油、可乐，三种不同流体从上到下流动在面料表面，体现三防科技。
+25Q3 功能类 10	Seedream 3.0	功能类	25Q3	蓝色的面料，白色蒸汽从下而上喷出，灰色的背景，摄影灯光照明，平视视角，表现透气面料的空气流动感。
+25Q3 功能类 11	Seedream 3.0	功能类	25Q3	浅灰渐变背景下的蓬松棉花，柔和光线，下方是满一层丝状的棉絮，虚幻5引擎，表现纯棉面料的天然柔软质感。
+25Q3 功能类 12	Seedream 3.0	功能类	25Q3	灰色的平整面料上，泼撒水，形态优美，水在接触面料后自然滑落，体现防泼水科技。
+25Q3 功能类 13	Seedream 3.0	功能类	25Q3	浅咖色面料，雨水击打的面料上，灰色背景，视角旋转45度，雨水击打在面料上发生轻微形变，表现防雨科技。
+25Q3 功能类 14	Seedream 3.0	功能类	25Q3	灰色的面料上，放着一个圆形刷子，刷子背面朝向面料放置，体现面料的耐磨性。
+25Q3 功能类 15	Seedream 3.0	功能类	25Q3	一层浅蓝色的面料侧面展示，面料下方有圆形水珠，面料上方有水蒸气冒起，表现透湿排湿科技。
+25Q3 功能类 16	Seedream 3.0	功能类	25Q3	灰白渐变背景在同一个面料上呈现对比形式，左侧面料呈现褶皱纹理，右侧展现顺滑平整效果，柔光精准区分两种状态纤维细节，虚幻5引擎渲染超写实织物动态，飘动轨迹中保持面料形态稳定。
+25Q3 功能类 17	Seedream 3.0	功能类	25Q3	C4D白色极其纤细编织面料肌理，景深透视，有两个不规则的圆形细菌，大小不一，浅绿色玻璃材质，超远摄像机视角，表现抑菌科技。
+25Q4 模型类 18	Midjourney 7	模型类	25Q4	⼀件简洁⼲净的连帽灰⾊⽻绒服在空中飘浮，⽻绒服⾮常饱满。⽻绒服侧⾯45度呈现。形态⾃在;没有明显的褶皱。纹理清晰可⻅。拉链是处于敞开状态。⽻绒服内部照射着橙红⾊的光。背景为蓝天雪⼭场景。
+25Q4 模型类 19	Midjourney 7	模型类	25Q4	⼀件简洁⼲净的连帽浅咖⾊外套在空中飘浮。⾐服⾮常饱满侧⾯45度呈现。形态⾃在;没有明显的褶皱,纹理清断可⻅。背景为蓝天。
+25Q4 模型类 20	Midjourney 7	模型类	25Q4	⼀件简洁⼲净的灰⾊⽻绒服在空中飘浮。两个袖⼝向上抬起。⽻绒服⾮常饱满。⽻绒服朝向左侧45度。形态⾃在；没有明显的褶皱。纹理清晰可⻅。⽻绒服内部是⽆缝合的⾯料。背景为灰⾊场景。
+25Q4 功能类 21	Midjourney 7	功能类	25Q4	Thesurrealist artstyle centerson "soft" elements, presenting softand rounded whitefluffyspheres.Their tinyhairs naturally extendand floatintheair. Thegentle lightand shadowblend gentlyonthe surface, enhancingthe three- dimensionality .The backgroundis agradientof orange, creatinga warmand peaceful spatialsense. Itpresentsa serene, dreamlikeand textured aesthetic atmosphere..- -ar4:3--style raw--stylize 300
+25Q4 功能类 22	Midjourney 7	功能类	25Q4	Aclose-upofa small,round, fluffywhite materialfloating intheair againstan orange background withwhitesilkfloss,soft lighting,macro photography, withafew strandsoffluff aroundawhite square device,blurred background, highresolution, hyper-realistic.
+25Q4 功能类 23	Midjourney 7	功能类	25Q4	Thesurreal naturalart style showcases thefine textureofa layerof textile, enhancingthe overall delicacyand luster.The fibersare arrangednaturallyand vertically, withasoft andfluffy texture,asif expressingthe visualeffectof the combination ofnatural fibersand modern technology. The backgroundis warmand soft.Thepale lightpasses throughthe fibersto createa gentleand beautifullight andshadow effect, creatinga warm, comfortable andtextured atmosphere, showcasing thetouchof natural materialsand apoeticvisual effect.--ar4:3- -raw
+25Q4 功能类 24	Seedream 3.0	功能类	25Q4	正视图视⻆，以红橙⾊渐变⾊为背景，⽻绒纤维堆积在画⾯的下半部分整体材质呈现半透明，前景景深，空中还有零星的圆形绒丝缓缓飘落，超细腻⽻丝，漂浮状态，轻盈蓬松，⽩⾊半透明结构，逼真质感，微距摄影，⾼清细节，边缘的绒感；
+25Q4 功能类 25	Seedream 3.0	功能类	25Q4	⼀朵⽻绒簇，超细腻⽻丝，漂浮状态，轻盈蓬松，⽩⾊半透明结构，逼真质感，微距摄影，⾼清细节，逆光光线照亮⽻绒每⼀跟绒⽑，背景呈红橙⾊的渐变⾊，在它围绕三个很⼤的不规则的⽔珠，⽻绒簇与⽔珠相互挤压进⾏交互。呈现灵动的画⾯⻛格
+26Q2 模型类 26	nano pro	模型类	26Q2	⼀件带有兜帽的轻盈⽩⾊浮空夹克，⾥⾯⽆⼈，⾯料柔软透⽓，纯⽩⾊织物，质地细腻，夹克悬于半空，拉链敞开，袖⼦轻轻展开，超轻超透⽓的感觉，流动的⽓流中带有明显的渐隐彩虹光效沿着夹克整体轮廓（光效要远离夹克），清新洁净的氛围，淡蓝⾊渐变的天空背景，⾼端服装商业⻛格，极简构图，柔和的漫射光，没有刺眼的阴影，超⾼端的CG⻛格，优质品质，8K细节。需后期微调
+26Q2 模型类 27	nano pro	模型类	26Q2	⼀件轻薄的凉感连帽外套被封存在巨⼤的透明冰块中，外套呈柔和的浅粉⾊，并带有淡⻩⾊的⾛线，⾯料轻透、褶皱⾃然，悬浮在冰块内部。冰块边缘清晰透明，内部充满冰裂纹、凝霜纹理与被折射的冷⾊光线，呈现⾼亮的冰晶质感。冰块四周散发淡淡的冷⽓前景为柔和的雪地起伏，背景为⼲净的天空蓝渐变。整体光线明亮冷感，带有强烈的冰⾯反射，使画⾯显得清爽、极寒、纯净。整体氛围：极致降温、冰封般的冷感科技⼴告视觉。冰块必须保持透明+冰裂纹+折射光，不能变成玻璃外套的颜⾊必须保持浅粉+淡⻩⾊⾛线雪地应为柔软曲线形状，不是硬质冰⾯整体饱和度不应过⾼背景为天空蓝渐变，不可出现杂⾊
+26Q2 模型类 28	nano pro	模型类	26Q2	商业级别CG渲染，悬浮的⽩⾊连帽防晒，具备防晒阻隔技术，⾐服四周有透明的六边形蜂窝结构，形成弧形穹顶，先进⾯料防护可视化表现，⼲净的蓝⾊天空渐变背景;8K;需后期微调
+26Q2 模型类 29	nano pro	模型类	26Q2	⼀件由透明流体组成的裤⼦悬浮在空中。外套整体为流体材质，线条柔和流畅，边缘带有轻微折射与⾼光，表⾯带有⾃然透亮的冷感质地。裤⼦内部有极轻微的光散射，传递清凉触感。背景为从浅天蓝到⽩⾊的柔和纵向渐变，营造⼭泉般的清爽感。整体光源明亮柔和，极简清新。整体构图轻盈、空灵。透明材质要保持柔和⽔感，不能变成玻璃或冰块；材质折射的颜⾊需要是⽩⾊背景必须保留淡蓝→⽩的竖向渐变裤⼦形态需呈轻盈漂浮、⽆实体模特
+26Q2 模型类 30	Seedream 4.5	模型类	26Q2	⾼端功能性CG渲染⻛格。漂浮的⽩⾊织物T恤，轻盈透⽓的⾯料，⽔蒸⽓从⾯料表⾯向外散发，背景是蓝⾊到⽩⾊渐变（⽆杂⾊）；⾯料质地⼲爽顺滑，内部不吸⽔，洁净清新的清凉肤感，影棚级布光，柔和⾼光，极简⼲净的构图，8K画质
+26Q2 模型类 31	nano pro	模型类	26Q2	⾼端功能性CG渲染⻛格。漂浮的⽩⾊织物T恤，轻盈透⽓的⾯料，⽔蒸⽓从⾯料⾯向外散发，背景是蓝⾊到⽩⾊渐变（⽆杂⾊）；⾯料质地⼲爽顺滑，内部不吸⽔，洁净清新的清凉肤感，影棚级布光，柔和⾼光，极简⼲净的构图，8K画质
+26Q2 模型类 32	nano pro	模型类	26Q2	夏季凉感服装产品视觉，⼀条悬浮展示的⽩⾊T恤漂浮在空中，视觉轻盈，不透明⾯料。⾐服表⾯附着细腻冰霜颗粒质感与冷凝质感，周围散发出很淡的⽩⾊凉雾，表现持续降温与透⽓凉感功能。背景从上到下是蓝⾊到⽩⾊的渐变⾊，空⽓中带有⼤⼩不⼀的冰感粒⼦，整体⻛格清爽、理性、⾼端电商产品KV，⽆⼈物，⽆光效，⾐服上⽆⽔滴，⽆夸张变形。
+26Q2 功能类 33	nano pro	功能类	26Q2	⼀张超写实的微距照⽚，⼀块晶莹剔透的冰块飘在空中，下⽅是柔软的浅蓝⾊布料。冰块⼀⻆轻轻触碰到⾯料，⾯料被接触的局部表⾯增加⽔晶形态凸起表层（呈现透明冰霜颗粒纹理）；背景从上到下是蓝⾊到浅蓝⾊的渐变⾊（⽆其他杂⾊）；布料具有细腻的⾯料纹理，⾯料⾃然摆动。冰块向下散发出柔和的冷雾。⾼调照明。景深效果，焦点在冰块上，边缘模糊。3D产品渲染⻛格，Octane渲染，8k分辨率，构图⼲净，极简美学。
+26Q2 功能类 34	nano pro	功能类	26Q2	超微距特写镜头，抽象纤维结构，柔软的⽩⾊编织纤维以流畅重复的纹理相互交织，中⼼是冰蓝⾊半透明凝胶材质与⽩⾊纤维相互交织，呈现冰冻质感；表⾯嵌有冰晶与精致雪花，点缀着霜粒与微⽔滴，视觉效果极致洁净清新。整体为⾼端商业CG⻛格，材质渲染超精细，质感丝滑柔顺，⾊彩过渡柔和渐变，冷⾊调配⾊，以⽩⾊与冰蓝⾊为主；采⽤⾼调打光、柔和影棚灯光，⽆⽣硬阴影，浅景深效果，电影感微距构图，营造未来感护肤或⾯料科技概念，画⾯超写实，8K超清画质，焦点清晰锐利，背景极简
+26Q2 功能类 35	nano pro	功能类	26Q2	柔软的⽩⾊编织纤维以流畅重复的纹理相互紧密交织⽆缝隙（处于画⾯下半部分）；视⻆处于画⾯中⼼位置；背景从上到下是淡蓝⾊到⽩⾊渐变，⼀个不规则的圆形⽔滴从织物上⽅向下飘动，四周有很⼩的⽔珠；⽔滴跟纤维有交互；飘动过程中细微⽔汽与雾⽓向上扩散；整体画⾯⼲净；⾼端CG⻛格；强对⽐，⾼质感需后期微调
+26Q2 功能类 36	nano pro	功能类	26Q2	⾼端功能⾯料科技CG可视化；COOLMAX⻛格功能性⾯料微距特写，浅蓝⾊冷⾊调，⾼密度、规则排列的织物纹理清晰可⻅，⾯料中央区域呈现吸湿微微凹陷结构，形成深浅渐变的湿润区域，⽔分被迅速吸⼊纤维内部的可视化效果，湿润区域向上飘动烟雾，湿⽓向内集中并向外扩散的排湿表现，整体画⾯⼲净、轻盈、清爽，写实⻛格，
+26Q2 功能类 37	nano pro	功能类	26Q2	⾼端CG渲染⻛格；特写侧拍⼀条动感的⽩⾊⾯料扭曲横跨画⾯。⼀束带有彩虹折射效果的光束击中表层，光线完全被反射并产⽣多⾊偏折；光线照射在⽩⾊表层上的点呈现出温暖的橙⾊扩散，表明有热阻隔效果。织物背⾯是浅蓝⾊，⾯料下⽅伴有淡淡的冷⽓和冰碴，象征着有效的隔热。背景是天空⾊；⾼对⽐度、图表⻛格、光线追踪、8K分辨率、构图简洁。
+26Q2 功能类 38	nano pro	功能类	26Q2	抗菌防护科技可视化，透明实体⽔泡悬浮在画⾯中⼼，⽔泡包裹着零星绿⾊杆状微⽣物，⽔泡边缘呈不规则形态，内部还有零星的⼀些细⼩的⽔泡，表⾯具有流动性和厚重感；（避免出现玻璃质感，要是流体质感）下⽅为⽩⾊动态⾯料，背景从上到下是蓝⾊到⽩⾊渐变，⾊阶过渡极其平滑⾃然，背景中带有⼏乎不可察觉的细腻纹理与轻微空⽓感，避免任何⾊带或渐变断层，整体⼲净统⼀。画⾯清洁、轻盈；⾼端商业CG渲染⻛格；需后期微调
+26Q2 功能类 39	nano pro	功能类	26Q2	⽣成⾼科技隔热织物的特写宏观横截展示（两层），⾯料呈弧形层状结构。表⾯呈现淡蓝⾊并具有清晰的织物纹理⼀束带彩虹折射效果的光束击中材料表层，全部被反射并产⽣光线偏折。材料下⽅散发轻柔冷雾，突出其凉感与散热效果。背景为⼲净的蓝⾊渐变，整体呈现现代科技产品⼴告视觉。整体⻛格：未来感材料科技展示、纹理写实、结构清晰、突出产品功能特性。光束必须保留彩虹折射效果，避免变成单⾊激光六边形纹理要保持“织物/涂层”质感，⽽不是⾦属⽹冷雾不能过浓，应为轻微科技雾⽓
+26Q2 功能类 40	nano pro	功能类	26Q2	主体(Subject):图像中⼼是⼀个由⽔构成的漩涡（Vortex），并且有⼤量⻜溅的⽔花和⽔滴。在⽔漩涡的中空，⼀条⽩⾊的⾯料带正呈螺旋状扭动，看起来像是被强劲的⽔流冲刷清洗。（⾯料整体褶皱没有那么多）环境(Environment):漩涡悬浮在⼀个平静的⽔⾯上⽅，背景是浅蓝⾊的渐变⾊，营造出⼲净清爽的氛围⻛格(Style):图像⾮常清晰、真实，不像是⼿绘，更偏向于“3D渲染”（3DRender）或“⾼速摄影”（High-speedphotography）。细节(Details):⽔是“清澈透明的”（Clear,Transparent），可以看到很多“⽓泡”（Bubbles）和“⻜溅物”（Splashes），⾯料的纹理感和肌理感@
+26Q2 功能类 41	nano pro	功能类	26Q2	主体(Subject):图像中⼼是⼀个⽔涡流在平静的海⾯上旋转和⻜溅，并且有⼤量⻜溅的⽔花和⽔滴。在⽔涡流中⼼，⼀条⽩⾊的⾯料带正呈螺旋状扭动，看起来像是被强劲的⽔流冲刷清洗。（⾯料整体褶皱没有那么多）环境(Environment):背景是浅蓝⾊的渐变⾊，左上⻆是太阳光斑，营造出整体防晒整洁的氛围⻛格(Style):图像⾮常清晰、真实，不像是⼿绘，更偏向于“3D渲染”（3DRender）或“⾼速摄影”细节(Details):⽔是“清澈透明的”（Clear,Transparent），可以看到很多“⽓泡”（Bubbles）和“⻜溅物”（Splashes），太阳光斑
+`.trim().split("
+").map((line) => line.split("	"));
+
+const prompts = promptLibrarySeed.map(([title, model, category, rawQuarter, prompt], index) => {
+  const imageNumber = String(index + 1).padStart(3, "0");
+  const quarter = rawQuarter.match(/Q[1-4]/)?.[0] || rawQuarter;
+  return {
+    id: `prompt-${imageNumber}`,
+    title,
+    model,
+    category,
+    quarter,
+    rawQuarter,
+    scene: "Prompt 素材",
+    prompt,
+    image: `/aigc-assets/prompt/prompt-${imageNumber}.webp`,
+  };
+});
 
 const categories = ["全部", "模型类", "功能类", "场景类"];
 const quarters = ["Q1", "Q2", "Q3", "Q4"];
@@ -139,83 +116,78 @@ function CheckIcon() {
   );
 }
 
-function VisualCard({ color }) {
-  const [pointer, setPointer] = useState({ x: 50, y: 50 });
-
-  function handlePointerMove(event) {
-    const rect = event.currentTarget.getBoundingClientRect();
-    setPointer({
-      x: ((event.clientX - rect.left) / rect.width) * 100,
-      y: ((event.clientY - rect.top) / rect.height) * 100,
-    });
-  }
-
+function VisualCard({ image, title }) {
   return (
     <motion.div
-      onPointerMove={handlePointerMove}
       whileHover={{ scale: 1.015 }}
       transition={spring}
-      className={`relative h-full min-h-[320px] overflow-hidden rounded-[34px] bg-gradient-to-br ${color}`}
+      className="relative h-full min-h-[320px] overflow-hidden rounded-[34px] bg-[#eef2f7]"
     >
-      <motion.div
-        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-        style={{
-          background: `radial-gradient(circle at ${pointer.x}% ${pointer.y}%, rgba(255,255,255,.85), transparent 34%)`,
+      <img
+        src={image}
+        alt={title}
+        loading="lazy"
+        className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.045]"
+        onError={(event) => {
+          event.currentTarget.style.display = "none";
         }}
       />
-      <motion.div
-        className="absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/55 blur-3xl"
-        animate={{ scale: [1, 1.08, 1], opacity: [0.55, 0.72, 0.55] }}
-        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.div
-        className="absolute left-[15%] top-[16%] h-36 w-36 rounded-[44%] bg-white/70 shadow-2xl shadow-slate-900/10"
-        animate={{ y: [0, -10, 0], rotate: [0, 2, 0] }}
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.div
-        className="absolute bottom-[16%] right-[14%] h-44 w-36 rotate-6 rounded-[42%] bg-white/50 shadow-2xl shadow-slate-900/10"
-        animate={{ y: [0, 12, 0], rotate: [6, 2, 6] }}
-        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-      />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_10%,rgba(255,255,255,0.16),transparent_42%)]" />
     </motion.div>
   );
 }
 
 function AnimatedBackground({ scrollYProgress }) {
-  const glowY = useTransform(scrollYProgress, [0, 1], [0, -220]);
-  const glowScale = useTransform(scrollYProgress, [0, 1], [1, 1.25]);
-  const gridOpacity = useTransform(scrollYProgress, [0, 0.45, 1], [0.32, 0.14, 0.08]);
+  const glowY = useTransform(scrollYProgress, [0, 1], [0, -240]);
+  const glowScale = useTransform(scrollYProgress, [0, 1], [1, 1.28]);
+  const gridOpacity = useTransform(scrollYProgress, [0, 0.45, 1], [0.34, 0.18, 0.1]);
 
   return (
     <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
       <motion.div
         style={{ y: glowY, scale: glowScale }}
-        className="absolute left-1/2 top-[-18rem] h-[42rem] w-[42rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(0,113,227,0.18),rgba(90,200,250,0.08)_38%,transparent_68%)] blur-2xl"
+        animate={{ x: [0, 34, -28, 0], opacity: [0.86, 1, 0.9, 0.86] }}
+        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute left-1/2 top-[-18rem] h-[42rem] w-[42rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(0,113,227,0.2),rgba(90,200,250,0.1)_38%,transparent_68%)] blur-2xl"
+      />
+
+      <motion.div
+        animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute inset-0 opacity-45 [background-size:220%_220%] bg-[linear-gradient(120deg,rgba(255,255,255,0.5),transparent_28%,rgba(0,113,227,0.12)_46%,transparent_64%,rgba(175,82,222,0.1))]"
+      />
+
+      <motion.div
+        animate={{ x: [0, 78, -42, 0], y: [0, -52, 64, 0], scale: [1, 1.14, 0.98, 1] }}
+        transition={{ duration: 7.5, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute -left-32 top-40 h-96 w-96 rounded-full bg-blue-300/20 blur-3xl"
       />
       <motion.div
-        animate={{ x: [0, 42, -18, 0], y: [0, -24, 36, 0], scale: [1, 1.08, 0.96, 1] }}
-        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute -left-32 top-40 h-96 w-96 rounded-full bg-blue-300/18 blur-3xl"
+        animate={{ x: [0, -72, 44, 0], y: [0, 58, -36, 0], scale: [1, 0.94, 1.12, 1] }}
+        transition={{ duration: 8.5, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute -right-24 top-[28rem] h-[30rem] w-[30rem] rounded-full bg-indigo-300/18 blur-3xl"
       />
       <motion.div
-        animate={{ x: [0, -36, 24, 0], y: [0, 28, -18, 0], scale: [1, 0.94, 1.1, 1] }}
-        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute -right-24 top-[28rem] h-[30rem] w-[30rem] rounded-full bg-indigo-300/16 blur-3xl"
+        animate={{ x: [0, 48, -34, 0], y: [0, -38, 44, 0], opacity: [0.18, 0.32, 0.22, 0.18], scale: [1, 1.08, 0.96, 1] }}
+        transition={{ duration: 6.8, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute bottom-12 left-1/3 h-80 w-80 rounded-full bg-cyan-200/24 blur-3xl"
       />
       <motion.div
-        animate={{ x: [0, 22, -16, 0], y: [0, -18, 18, 0], opacity: [0.13, 0.24, 0.16, 0.13] }}
-        transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute bottom-12 left-1/3 h-80 w-80 rounded-full bg-cyan-200/22 blur-3xl"
+        animate={{ x: [0, -36, 28, 0], y: [0, 30, -24, 0], opacity: [0.12, 0.22, 0.14, 0.12] }}
+        transition={{ duration: 7.2, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute bottom-24 right-[18%] h-72 w-72 rounded-full bg-orange-200/20 blur-3xl"
       />
+
       <motion.div
         style={{ opacity: gridOpacity }}
-        className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.035)_1px,transparent_1px)] bg-[size:72px_72px] [mask-image:radial-gradient(circle_at_50%_12%,black,transparent_68%)]"
+        animate={{ backgroundPosition: ["0px 0px", "64px 64px", "0px 0px"] }}
+        transition={{ duration: 9, repeat: Infinity, ease: "linear" }}
+        className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.038)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.038)_1px,transparent_1px)] bg-[size:72px_72px] [mask-image:radial-gradient(circle_at_50%_12%,black,transparent_68%)]"
       />
       <motion.div
-        animate={{ opacity: [0.35, 0.55, 0.35] }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.8),transparent_42%)]"
+        animate={{ opacity: [0.35, 0.62, 0.38, 0.35] }}
+        transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.78),transparent_42%)]"
       />
     </div>
   );
@@ -318,7 +290,7 @@ export default function PreviewPromptGallery() {
             transition={{ delay: 0.16, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
             className="mx-auto max-w-4xl text-6xl font-semibold tracking-[-0.065em] text-[#1d1d1f] md:text-8xl"
           >
-            Prompts that help ideas move faster.
+            41 Prompt visuals, ready to copy.
           </motion.h1>
           <motion.p
             initial={{ y: 18, opacity: 0 }}
@@ -326,7 +298,7 @@ export default function PreviewPromptGallery() {
             transition={{ delay: 0.28, duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
             className="mx-auto mt-7 max-w-2xl text-xl leading-8 text-black/58"
           >
-            把常用 Prompt 整理成清晰的创作入口。少一点管理感，多一点可理解、可复制、可复用的团队灵感库。
+            从原项目的 41 张 Prompt 图片与对应提示词中整理而来。悬停查看 Prompt，点击图片即可复制。
           </motion.p>
         </motion.section>
 
@@ -439,7 +411,7 @@ export default function PreviewPromptGallery() {
                     transition={spring}
                     whileHover={{ scale: 1.045 }}
                   >
-                    <VisualCard color={item.color} />
+                    <VisualCard image={item.image} title={item.title} />
                   </motion.div>
 
                   <motion.div
