@@ -337,10 +337,10 @@ export default function PreviewPromptGallery() {
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="sticky top-16 z-20 mx-auto max-w-7xl px-5 pb-10"
         >
-          <div className="rounded-[36px] border border-white/45 bg-white/24 p-4 shadow-[0_12px_40px_rgba(0,0,0,0.08)] backdrop-blur-[30px] supports-[backdrop-filter]:bg-white/22">
+          <div className="rounded-[28px] border border-white/70 bg-white/48 p-2.5 shadow-[0_12px_40px_rgba(0,0,0,0.08)] backdrop-blur-2xl">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                <div className="flex gap-2 overflow-x-auto rounded-full border border-white/35 bg-white/20 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.38)] backdrop-blur-xl">
+                <div className="flex gap-2 overflow-x-auto rounded-full border border-white/70 bg-[#f1f2f4]/85 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.65)] backdrop-blur-xl">
                   {categories.map((item) => (
                     <button
                       key={item}
@@ -353,7 +353,7 @@ export default function PreviewPromptGallery() {
                         <motion.span
                           layoutId="activeCategoryPill"
                           transition={spring}
-                          className="absolute inset-0 rounded-full bg-black/78 shadow-[0_8px_24px_rgba(0,0,0,0.18)] backdrop-blur-xl"
+                          className="absolute inset-0 rounded-full bg-zinc-900 shadow-[0_8px_24px_rgba(0,0,0,0.22)]"
                         />
                       )}
                       <span className="relative z-10">{item}</span>
@@ -361,7 +361,7 @@ export default function PreviewPromptGallery() {
                   ))}
                 </div>
 
-                <div className="flex items-center overflow-x-auto rounded-full border border-white/35 bg-white/20 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.38)] backdrop-blur-xl">
+                <div className="flex items-center overflow-x-auto rounded-full border border-white/70 bg-[#f1f2f4]/85 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.65)] backdrop-blur-xl">
                   {quarters.map((item, index) => {
                     const theme = quarterThemes[item];
 
@@ -405,7 +405,7 @@ export default function PreviewPromptGallery() {
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
                   placeholder="搜索 Prompt"
-                  className="h-12 w-full rounded-full border border-white/35 bg-white/22 pl-11 pr-5 text-sm text-black/78 outline-none backdrop-blur-xl placeholder:text-black/35 transition focus:bg-white/30 focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)]"
+                  className="h-11 w-full rounded-full border border-white/70 bg-[#f1f2f4]/85 pl-11 pr-5 text-sm text-black/78 outline-none backdrop-blur-xl placeholder:text-black/35 transition focus:bg-white/80 focus:shadow-[0_8px_30px_rgba(0,0,0,0.06)]"
                 />
               </motion.label>
             </div>
